@@ -83,8 +83,7 @@ class FileViewModel extends ChangeNotifier {
           fileContent: newFileContent ?? selectedFile!.fileContent,
         );
       }
-      print("✏️ Updated File: $updatedFile");
-      notifyListeners();
+      print("✅ File Loaded: ${selectedFile?.fileName}, ID: ${selectedFile?.fileId}");      notifyListeners();
     }
   }
 

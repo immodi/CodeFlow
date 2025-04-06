@@ -11,9 +11,10 @@ class FileModel {
 
   factory FileModel.fromJson(Map<String, dynamic> json) {
     return FileModel(
-      fileId: json['fileId'],
-      fileName: json['fileName'],
-      fileSizeInBytes: json['fileSizeInBytes'],
+      fileId: json['fileId'] ?? 0,
+      fileName: json['fileName'] ?? "",
+      fileSizeInBytes: json['fileSizeInBytes'] ?? 0,
     );
   }
+
 }

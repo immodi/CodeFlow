@@ -42,17 +42,33 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
 
   @override
   Future<FileModel> updateFile(String token, int fileId, {String? newFileName, String? newFileContent}) async {
-    final response = await networkServices.dio.patch(
-      'file',
-      data: {
-        "fileId": fileId,
-        "newFileName": newFileName,
-        "newFileContent": newFileContent
-      },
-      options: Options(headers: {'Authorization': 'Bearer $token'}),
-    );
-    return FileModel.fromJson(response.data);
+    // تأكيد أن fileId ليس null
+    assert(fileId != null, "❌ خطأ: fileId لا يمكن أن يكون null");
+
+    final Map<String, dynamic> requestData = {
+      "fileId": fileId,
+      if (newFileName != null) "newFileName": newFileName,
+      if (newFileContent != null) "newFileContent": newFileContent,
+    };
+
+    print("📡 Sending update request: $requestData");
+
+    try {
+      final response = await networkServices.dio.patch(
+        'file',
+        data: requestData,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      print("✅ Response Data: ${response.data}");
+
+      return FileModel.fromJson(response.data);
+    } catch (e) {
+      print("❌ Update Error: $e");
+      rethrow; // إعادة رمي الخطأ لمعرفة السبب الحقيقي
+    }
   }
+
 
   @override
   Future<bool> deleteFile(String token, int fileId) async {
@@ -87,7 +103,7 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
   Future<FileDetailModel> readSingleFile(String token, int fileId) async {
     final response = await networkServices.dio.get(
       'file',
-      queryParameters: {"fileId": fileId},
+      data: {"fileId": fileId},
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
