@@ -74,48 +74,137 @@ class LoginScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: AppColors.gray,
         body: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(10.0),
           child: Consumer<AuthViewModel>(
             builder: (context, viewModel, child) {
-              return Column(
-                children: [
-                  SizedBox(height: size.height * 0.13),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              return Form(
+                key: viewModel.formKey, // إضافة GlobalKey<FormState> هنا
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  child: Column(
                     children: [
-                      Image.asset(
-                        AppAssets.appLogo,
-                        fit: BoxFit.cover,
-                        filterQuality: FilterQuality.high,
-                        height: size.height * 0.15,
-                        width: size.width * 0.47,
+                      SizedBox(height: size.height * 0.13),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            AppAssets.appLogo,
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.high,
+                            height: size.height * 0.15,
+                            width: size.width * 0.47,
+                          ),
+                        ],
+                      ),
+                      Text(
+                        'Welcome Back!',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                      SizedBox(height: size.height * 0.14),
+                      CustomTextField(
+                        controller: viewModel.usernameController,
+                        hintText: 'Enter your username',
+                        icon: Icons.person,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your username';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: size.height * 0.01),
+                      CustomTextField(
+                        controller: viewModel.passwordController,
+                        hintText: 'Enter your password',
+                        icon: Icons.lock,
+                        isObscure: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: size.height * 0.01),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            'Forget Password?',
+                            style: TextStyle(
+                              color: AppColors.lightGreen,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: size.height * 0.01),
+                      CustomButton(
+                        text: 'Sign In',
+                        onTap: () async {
+                          if (viewModel.formKey.currentState?.validate() ??
+                              false) {
+                            await viewModel.login(
+                              viewModel.usernameController.text,
+                              viewModel.passwordController.text,
+                            );
+                            if (viewModel.isSuccess) {
+                              Navigator.pushReplacementNamed(
+                                context,
+                                AppRoutesName.compilerScreen,
+                              );
+                            }
+                          }
+                        },
+                        isLoading: viewModel.isLoading, // تمرير حالة التحميل
+                      ),
+
+                      SizedBox(height: size.height * 0.029),
+                      Row(
+                        children: [
+                          Expanded(child: Divider(color: AppColors.white)),
+                          Text(
+                            ' OR ',
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 13,
+                            ),
+                          ),
+                          Expanded(child: Divider(color: AppColors.white)),
+                        ],
+                      ),
+                      SizedBox(height: size.height * 0.029),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Dont have an account? ',
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 13,
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushReplacementNamed(context, AppRoutesName.registerScreen);
+                            },
+                            child: Text(
+                              'Sign up',
+                              style: TextStyle(
+                                color: AppColors.lightGreen,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  Text(
-                    'Welcome Back!',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                  SizedBox(height: size.height * 0.14),
-                  CustomTextField(
-                    hintText: 'Enter your username',
-                    icon: Icons.person,
-                  ),
-                  SizedBox(height: size.height * 0.02),
-                  CustomTextField(
-                    hintText: 'Enter your password',
-                    icon: Icons.lock,
-                    isObscure: true,
-                  ),
-                  CustomButton(text: 'Sign In', onTap: () {
-
-                  },),
-                  Spacer(),
-
-                ],
+                ),
               );
             },
-
           ),
         ),
       ),

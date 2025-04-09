@@ -6,11 +6,13 @@ class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
   final Widget? icon;
+  final bool isLoading;
 
   const CustomButton({
     required this.text,
     required this.onTap,
     this.icon,
+    this.isLoading = false,
     super.key,
   });
 
@@ -30,14 +32,21 @@ class CustomButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (icon != null) icon!,
-            Text(
-              ' $text',
-              style: TextStyle(
+            if (isLoading)
+              CircularProgressIndicator(
                 color: AppColors.white,
-                fontWeight: FontWeight.bold,
               ),
-            ),
+            if (!isLoading)
+              ...[
+                if (icon != null) icon!,
+                Text(
+                  ' $text',
+                  style: TextStyle(
+                    color: AppColors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ]
           ],
         ),
       ),

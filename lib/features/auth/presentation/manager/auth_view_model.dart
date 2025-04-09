@@ -15,6 +15,8 @@ class AuthViewModel extends ChangeNotifier {
 
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
 
   // Login Method
   Future<void> login(String username, String password) async {

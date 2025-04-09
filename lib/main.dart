@@ -6,9 +6,6 @@ import 'package:graduation_project/features/auth/data/data_source/data_source_im
 import 'package:graduation_project/features/auth/data/repo/repo_imp.dart';
 import 'package:graduation_project/features/auth/domain/use_cases/auth_use_case.dart';
 import 'package:graduation_project/features/auth/presentation/manager/auth_view_model.dart';
-import 'package:graduation_project/features/compile/data/data_source/compile_data_source_imp.dart';
-import 'package:graduation_project/features/compile/data/repo/compile_repository_impl.dart';
-import 'package:graduation_project/features/compile/domain/use_cases/compile_use_case.dart';
 import 'package:graduation_project/features/file_managment/data/data_source/file_remote_data_source_imp.dart';
 import 'package:graduation_project/features/file_managment/data/repo/file_repository_imp.dart';
 import 'package:graduation_project/features/file_managment/domain/use_cases/file_use_case.dart';
@@ -16,7 +13,12 @@ import 'package:graduation_project/features/file_managment/presentation/manager/
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'features/compile/presentation/manager/compile_view_model.dart';
+import 'features/main_layout/compiler_tab/data/data_source/compile_data_source_imp.dart';
+import 'features/main_layout/compiler_tab/data/repo/compile_repository_impl.dart';
+import 'features/main_layout/compiler_tab/domain/use_cases/compile_use_case.dart';
+import 'features/main_layout/compiler_tab/presentation/manager/compile_view_model.dart';
+
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
