@@ -153,7 +153,7 @@ class LoginScreen extends StatelessWidget {
                             if (viewModel.isSuccess) {
                               Navigator.pushReplacementNamed(
                                 context,
-                                AppRoutesName.compilerScreen,
+                                AppRoutesName.mainLayout,
                               );
                             }
                           }

@@ -12,7 +12,6 @@ import 'package:graduation_project/features/file_managment/domain/use_cases/file
 import 'package:graduation_project/features/file_managment/presentation/manager/file_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'features/main_layout/compiler_tab/data/data_source/compile_data_source_imp.dart';
 import 'features/main_layout/compiler_tab/data/repo/compile_repository_impl.dart';
 import 'features/main_layout/compiler_tab/domain/use_cases/compile_use_case.dart';
@@ -80,7 +79,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         initialRoute: token != null
-            ? AppRoutesName.compilerScreen
+            ? AppRoutesName.mainLayout
             : AppRoutesName.loginScreen,
         routes: AppRoutes.routes,
       ),
