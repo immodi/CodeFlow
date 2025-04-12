@@ -16,8 +16,8 @@ class _MainLayoutState extends State<MainLayout> {
 List<Widget> screens =
 [
   CodeEditorScreen(),
+  ChatBotScreen(),
   ProfileScreen(),
-  ChatBotScreen()
 ];
 int currentIndex = 0;
 
