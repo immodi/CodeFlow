@@ -38,6 +38,9 @@ dependencies:
   provider:
   shared_preferences:
   flutter_svg:
+  flutter_code_editor:
+  flutter_highlight:
+  highlight:
 
 dev_dependencies:
   flutter_test:

@@ -101,6 +101,7 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
 
   @override
   Future<FileDetailModel> readSingleFile(String token, int fileId) async {
+
     final response = await networkServices.dio.get(
       'file',
       data: {"fileId": fileId},

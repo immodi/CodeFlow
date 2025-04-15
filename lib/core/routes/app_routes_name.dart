@@ -7,4 +7,6 @@ class AppRoutesName{
   static const String profileScreen = 'profileScreen';
   static const String chatBotScreen = 'chatBotScreen';
   static const String compiler = 'compiler';
+  static const String myProjectScreen = 'myProjectScreen';
+  static const String output = 'output';
 }

@@ -1,0 +1,117 @@
+import 'package:flutter/material.dart';
+import 'package:graduation_project/core/routes/app_routes_name.dart';
+import 'package:graduation_project/core/theme/app_colors.dart';
+import 'package:graduation_project/features/file_managment/presentation/manager/file_view_model.dart';
+import 'package:provider/provider.dart';
+
+class MyProjectsScreen extends StatefulWidget {
+  const MyProjectsScreen({super.key});
+
+  @override
+  State<MyProjectsScreen> createState() => _MyProjectsScreenState();
+}
+
+class _MyProjectsScreenState extends State<MyProjectsScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      Provider.of<FileViewModel>(context, listen: false).fetchAllFiles();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    return Consumer<FileViewModel>(
+      builder: (context, fileViewModel, child) => Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppColors.gray,
+          iconTheme: IconThemeData(color: AppColors.white),
+        ),
+        backgroundColor: AppColors.gray,
+        body: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              Expanded(
+                child: fileViewModel.isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : fileViewModel.files.isEmpty
+                    ? Center(
+                  child: Text(
+                    "no projects created",
+                    style: TextStyle(color: AppColors.white),
+                  ),
+                )
+                    : ListView.builder(
+                  itemCount: fileViewModel.files.length,
+                  itemBuilder: (context, index) {
+                    final file = fileViewModel.files[index];
+                    return InkWell(
+                        onTap: () {
+                          final navigatorKey = Navigator.of(context);
+
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (_) => const Center(child: CircularProgressIndicator()),
+                          );
+
+                          Future(() async {
+                            try {
+                              await Provider.of<FileViewModel>(context, listen: false)
+                                  .readSingleFile(file.fileId);
+
+                              navigatorKey.pop();
+                              navigatorKey.pushNamed(AppRoutesName.compiler);
+
+                            } catch (e) {
+                              navigatorKey.pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Error: ${e.toString()}')),
+                              );
+                            }
+                          });
+                        },
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        margin: EdgeInsets.all(6),
+                        height: size.height * 0.1,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: AppColors.lightGray,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.file_copy,
+                              color: AppColors.white,
+                              size: 19,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              file.fileName,
+                              style: TextStyle(
+                                color: AppColors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

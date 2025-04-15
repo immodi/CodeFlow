@@ -49,7 +49,8 @@ class FileViewModel extends ChangeNotifier {
       print("📄 Selected File: ${file.fileName}, ID: ${file.fileId}");
       notifyListeners();
     } else {
-      print("❌ File not found.");
+      print("❌ File not found or access denied");
+      throw Exception(errorMessage ?? "Failed to load file");
     }
   }
 

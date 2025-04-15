@@ -47,7 +47,9 @@ class ProfileScreen extends StatelessWidget {
                   SizedBox(height: 17,),
                   CustomProfileContainers(
                     text: 'My Projects',
-                    onTap:() {},
+                    onTap:() {
+                      Navigator.pushNamed(context, AppRoutesName.myProjectScreen);
+                    },
                     icon:Icon(Icons.file_copy, color: AppColors.white,size: 19,) ,
                   ),
                   SizedBox(height: 17,),
