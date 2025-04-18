@@ -13,8 +13,12 @@ class FileViewModel extends ChangeNotifier {
   String? errorMessage;
   List<FileModel> files = [];
   FileDetailModel? selectedFile;
+  FileModel? selectedNewFile;
   bool isDeleted = false;
   String? shareUrl;
+
+  TextEditingController _fileNameController = TextEditingController();
+
 
   FileViewModel({required this.fileUseCase, required this.token});
 
@@ -59,6 +63,8 @@ class FileViewModel extends ChangeNotifier {
     final newFile = await _execute(() => fileUseCase.createFile(token, fileName, fileContent));
 
     if (newFile != null) {
+      await readSingleFile(newFile.fileId);
+
       files.add(newFile);
       print("✅ File Created with ID: ${newFile.fileId}");
       notifyListeners();
@@ -66,6 +72,7 @@ class FileViewModel extends ChangeNotifier {
       print("❌ Failed to create file.");
     }
   }
+
 
 
   Future<void> updateFile(int fileId, {String? newFileName, String? newFileContent}) async {

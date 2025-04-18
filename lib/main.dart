@@ -10,6 +10,10 @@ import 'package:graduation_project/features/file_managment/data/data_source/file
 import 'package:graduation_project/features/file_managment/data/repo/file_repository_imp.dart';
 import 'package:graduation_project/features/file_managment/domain/use_cases/file_use_case.dart';
 import 'package:graduation_project/features/file_managment/presentation/manager/file_view_model.dart';
+import 'package:graduation_project/features/main_layout/chat_bot_tab/data/data_source/chatBot_data_imp.dart';
+import 'package:graduation_project/features/main_layout/chat_bot_tab/data/repo/chat_bot_repo_imp.dart';
+import 'package:graduation_project/features/main_layout/chat_bot_tab/domain/use_cases/chat_bot_use_case.dart';
+import 'package:graduation_project/features/main_layout/chat_bot_tab/presentation/manager/chat_bot_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'features/main_layout/compiler_tab/data/data_source/compile_data_source_imp.dart';
@@ -60,6 +64,11 @@ class MyApp extends StatelessWidget {
     final compileRemoteDataSource = CompileRemoteDataSourceImpl(networkServices: networkServices);
     final compileRepository = CompileRepositoryImpl(remoteDataSource: compileRemoteDataSource);
     final compileFeatureUseCase = CompileFeatureUseCase(repository: compileRepository);
+    
+    //chat bot layer
+    final chatBotDataSource = ChatBotDataSourceImpl(networkServices: networkServices);
+    final chatBotRepo = ChatBotRepositoryImpl(chatBotDataSource: chatBotDataSource);
+    final chatBotUseCase = ChatBotUseCase(chatBotRepo);
 
 
     return MultiProvider(
@@ -74,6 +83,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => CompileViewModel(compileFeatureUseCase: compileFeatureUseCase, token: token?? ""),
         ),
+        ChangeNotifierProvider(create: (_) => ChatBotViewModel(chatBotUseCase),)
 
       ],
       child: MaterialApp(

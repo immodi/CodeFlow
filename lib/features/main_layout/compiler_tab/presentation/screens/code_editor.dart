@@ -195,7 +195,7 @@ class CodeEditorScreen extends StatelessWidget {
   }
 
   Future<bool> _createFile(BuildContext context) async {
-    TextEditingController _fileNameController = TextEditingController();
+    TextEditingController fileNameController = TextEditingController();
     final fileViewModel = Provider.of<FileViewModel>(context, listen: false);
     String fileName = '';
 
@@ -209,7 +209,7 @@ class CodeEditorScreen extends StatelessWidget {
           onChanged: (value) {
             fileName = value;
           },
-          controller: _fileNameController,
+          controller: fileNameController,
           decoration: InputDecoration(hintText: "File name"),
         ),
         actions: [
@@ -221,7 +221,7 @@ class CodeEditorScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () async {
-              String fileName = _fileNameController.text.trim();
+              String fileName = fileNameController.text.trim();
               if (fileName.isNotEmpty) {
                 await fileViewModel.createFile(
                   fileName,

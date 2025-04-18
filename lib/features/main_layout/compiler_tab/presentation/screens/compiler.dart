@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:flutter_highlight/themes/monokai-sublime.dart';
+import 'package:graduation_project/features/main_layout/compiler_tab/presentation/widgets/bottom_buttons.dart';
 import 'package:highlight/languages/python.dart';
 import 'package:highlight/languages/javascript.dart';
 import 'package:highlight/languages/java.dart';
@@ -112,6 +113,13 @@ class _CompilerScreenState extends State<CompilerScreen> {
             iconTheme: const IconThemeData(color: AppColors.white),
             title: Row(
               children: [
+                Text(
+                  fileViewModel.selectedFile?.fileName ??
+                      'No file selected', // إذا كان fileName فارغًا، يعرض "No file selected"
+                  style: TextStyle(color: AppColors.white, fontSize: 16),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(width: 10),
                 DropdownButton<String>(
                   hint: const Text(
                     '+ Select Language',
@@ -165,6 +173,49 @@ class _CompilerScreenState extends State<CompilerScreen> {
                       ),
                     ),
                   ),
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height * 0.07,
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                color: AppColors.lightGray,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.save, color: AppColors.white),
+                      onPressed: () async {
+                        if (fileViewModel.selectedFile == null) return;
+
+                        int? fileId = fileViewModel.selectedFile?.fileId;
+                        if (fileId == null) return;
+
+                        String newContent = _codeController.text;
+                        await fileViewModel.updateFile(
+                          fileId,
+                          newFileContent: newContent,
+                        );
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("تم حفظ الملف بنجاح")),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.format_indent_increase,
+                        color: AppColors.white,
+                      ),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.settings, color: AppColors.white),
+                      onPressed: () {},
+                    ),
+                  ],
                 ),
               ),
             ],
