@@ -55,7 +55,9 @@ class ProfileScreen extends StatelessWidget {
                   SizedBox(height: 17,),
                   CustomProfileContainers(
                     text: 'Import Link',
-                    onTap:() {},
+                    onTap:() {
+                      Navigator.pushNamed(context, AppRoutesName.importLinkScreen);
+                    },
                     icon:Icon(Icons.link_rounded, color: AppColors.white,size: 19,) ,
                   ),
                   SizedBox(height: 17,),

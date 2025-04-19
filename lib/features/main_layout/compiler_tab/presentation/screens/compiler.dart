@@ -206,10 +206,12 @@ class _CompilerScreenState extends State<CompilerScreen> {
                     ),
                     IconButton(
                       icon: const Icon(
-                        Icons.format_indent_increase,
+                        Icons.share,
                         color: AppColors.white,
                       ),
-                      onPressed: () {},
+                      onPressed: () async {
+
+                      },
                     ),
                     IconButton(
                       icon: const Icon(Icons.settings, color: AppColors.white),

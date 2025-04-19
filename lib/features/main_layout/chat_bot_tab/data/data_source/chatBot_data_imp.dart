@@ -10,7 +10,7 @@ class ChatBotDataSourceImpl implements ChatbotDataSource {
   @override
   Future<ChatBotModel> sendMessage(String message) async {
     try {
-      final response = await networkServices.dio.post(
+      final response = await networkServices.dio.get(
         "ai",
         data: {
           "message": message,
@@ -18,7 +18,7 @@ class ChatBotDataSourceImpl implements ChatbotDataSource {
       );
 
       if (response.statusCode == 200) {
-        return ChatBotModel.fromJson(response.data);
+        return ChatBotModel.fromJson(response.data,message);
       } else {
         throw Exception("Failed to get response: ${response.statusCode}");
       }

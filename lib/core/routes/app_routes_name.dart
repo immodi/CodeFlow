@@ -9,4 +9,5 @@ class AppRoutesName{
   static const String compiler = 'compiler';
   static const String myProjectScreen = 'myProjectScreen';
   static const String output = 'output';
+  static const String importLinkScreen = 'importLinkScreen';
 }

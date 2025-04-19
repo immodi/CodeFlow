@@ -101,6 +101,12 @@ class _MyProjectsScreenState extends State<MyProjectsScreen> {
                                 fontSize: 15,
                               ),
                             ),
+                            Spacer(),
+                            IconButton(
+                              onPressed: () =>_confirmDelete(context, fileViewModel,file) ,
+                              icon: Icon(Icons.delete),
+                              color: AppColors.white,
+                            )
                           ],
                         ),
                       ),
@@ -114,4 +120,34 @@ class _MyProjectsScreenState extends State<MyProjectsScreen> {
       ),
     );
   }
+  void _confirmDelete(BuildContext context, FileViewModel fileViewModel, file) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.lightGray,
+        title: Text("Delete file",style: TextStyle(color:AppColors.white )),
+        content: Text("Are you sure you want to delete this file? This action cannot be undone.",style: TextStyle(color:AppColors.white ),),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("cancel",style: TextStyle(color:AppColors.white,fontWeight: FontWeight.bold ),),
+          ),
+          TextButton(
+            onPressed: () async {
+              await fileViewModel.deleteFile(file.fileId);
+
+              if (mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("File Deleted")),
+                );
+              }
+            },
+            child: Text("Delete", style: TextStyle(color: Colors.red,fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
 }

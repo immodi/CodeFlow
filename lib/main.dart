@@ -21,8 +21,6 @@ import 'features/main_layout/compiler_tab/data/repo/compile_repository_impl.dart
 import 'features/main_layout/compiler_tab/domain/use_cases/compile_use_case.dart';
 import 'features/main_layout/compiler_tab/presentation/manager/compile_view_model.dart';
 
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -36,10 +34,7 @@ void main() async {
     networkServices.updateToken(token);
   }
 
-  runApp(MyApp(
-    token: token,
-    networkServices: networkServices,
-  ));
+  runApp(MyApp(token: token, networkServices: networkServices));
 }
 
 class MyApp extends StatelessWidget {
@@ -52,24 +47,39 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     //  Auth Layer
     final authRemoteDataSource = AuthRemoteDataSourceImp();
-    final authRepository = AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
+    final authRepository = AuthRepositoryImpl(
+      remoteDataSource: authRemoteDataSource,
+    );
     final authUseCase = AuthUseCase(authRepository);
 
     //  File Management Layer
-    final fileRemoteDataSource = FileRemoteDataSourceImpl(networkServices: networkServices);
-    final fileRepository = FileRepositoryImpl(remoteDataSource: fileRemoteDataSource);
+    final fileRemoteDataSource = FileRemoteDataSourceImpl(
+      networkServices: networkServices,
+    );
+    final fileRepository = FileRepositoryImpl(
+      remoteDataSource: fileRemoteDataSource,
+    );
     final fileUseCase = FileUseCase(repository: fileRepository);
 
     //compilation layer
-    final compileRemoteDataSource = CompileRemoteDataSourceImpl(networkServices: networkServices);
-    final compileRepository = CompileRepositoryImpl(remoteDataSource: compileRemoteDataSource);
-    final compileFeatureUseCase = CompileFeatureUseCase(repository: compileRepository);
-    
-    //chat bot layer
-    final chatBotDataSource = ChatBotDataSourceImpl(networkServices: networkServices);
-    final chatBotRepo = ChatBotRepositoryImpl(chatBotDataSource: chatBotDataSource);
-    final chatBotUseCase = ChatBotUseCase(chatBotRepo);
+    final compileRemoteDataSource = CompileRemoteDataSourceImpl(
+      networkServices: networkServices,
+    );
+    final compileRepository = CompileRepositoryImpl(
+      remoteDataSource: compileRemoteDataSource,
+    );
+    final compileFeatureUseCase = CompileFeatureUseCase(
+      repository: compileRepository,
+    );
 
+    //chat bot layer
+    final chatBotDataSource = ChatBotDataSourceImpl(
+      networkServices: networkServices,
+    );
+    final chatBotRepo = ChatBotRepositoryImpl(
+      chatBotDataSource: chatBotDataSource,
+    );
+    final chatBotUseCase = ChatBotUseCase(chatBotRepo);
 
     return MultiProvider(
       providers: [
@@ -78,19 +88,27 @@ class MyApp extends StatelessWidget {
           create: (_) => AuthViewModel(authUseCase: authUseCase),
         ),
         ChangeNotifierProvider(
-          create: (_) => FileViewModel(fileUseCase: fileUseCase, token: token?? ""),
+          create:
+              (_) =>
+                  FileViewModel(fileUseCase: fileUseCase, token: token ?? ""),
         ),
         ChangeNotifierProvider(
-          create: (_) => CompileViewModel(compileFeatureUseCase: compileFeatureUseCase, token: token?? ""),
+          create:
+              (_) => CompileViewModel(
+                compileFeatureUseCase: compileFeatureUseCase,
+                token: token ?? "",
+              ),
         ),
-        ChangeNotifierProvider(create: (_) => ChatBotViewModel(chatBotUseCase),)
-
+        ChangeNotifierProvider(
+            create:
+                (_) => ChatBotViewModel(chatBotUseCase: chatBotUseCase )),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute: token != null
-            ? AppRoutesName.mainLayout
-            : AppRoutesName.loginScreen,
+        initialRoute:
+            token != null
+                ? AppRoutesName.mainLayout
+                : AppRoutesName.loginScreen,
         routes: AppRoutes.routes,
       ),
     );

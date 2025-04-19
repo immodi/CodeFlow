@@ -170,18 +170,23 @@ class CodeEditorScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 10),
-                Container(
-                  height: size.height * 0.041,
-                  width: size.width * 0.35,
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.white, width: 1),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'import code',
-                      style: TextStyle(color: AppColors.white, fontSize: 13),
+                InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutesName.importLinkScreen);
+                  },
+                  child: Container(
+                    height: size.height * 0.041,
+                    width: size.width * 0.35,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.white, width: 1),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'import code',
+                        style: TextStyle(color: AppColors.white, fontSize: 13),
+                      ),
                     ),
                   ),
                 ),

@@ -27,7 +27,6 @@ class FileDetailModel {
     );
   }
 
-  // ✅ إضافة copyWith
   FileDetailModel copyWith({
     int? fileId,
     String? fileName,

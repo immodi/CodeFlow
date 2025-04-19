@@ -10,16 +10,25 @@ class ChatBotViewModel extends ChangeNotifier {
   String? errorMessage;
   List<ChatBotModel> messages = [];
 
-  ChatBotViewModel(this.chatBotUseCase);
+  ChatBotViewModel({required this.chatBotUseCase});
 
   Future<void> sendMessage(String message) async {
     isLoading = true;
     errorMessage = null;
+
+    // أضف رسالة المرسل قبل ما تبعت للـ API
+    messages.add(ChatBotModel(
+      message: message,
+      response: '',
+      dateTime: DateTime.now().toString(),
+      statusCode: 200,
+    ));
+
     notifyListeners();
 
     try {
       final response = await chatBotUseCase.sendMessage(message);
-      messages.add(response);
+      messages.add(response); // أضف رسالة الـ AI
       print("🤖 AI: ${response.response}");
     } catch (e) {
       errorMessage = e.toString();
@@ -29,6 +38,7 @@ class ChatBotViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
 
   void clearMessages() {
     messages.clear();
