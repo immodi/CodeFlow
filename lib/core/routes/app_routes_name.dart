@@ -1,5 +1,6 @@
 class AppRoutesName{
   AppRoutesName._();
+  static const String splash = '/';
   static const String loginScreen = 'LoginScreen';
   static const String registerScreen = 'RegisterScreen';
   static const String mainLayout = 'mainLayout';
@@ -10,4 +11,5 @@ class AppRoutesName{
   static const String myProjectScreen = 'myProjectScreen';
   static const String output = 'output';
   static const String importLinkScreen = 'importLinkScreen';
+  static const String onboarding = 'onboarding';
 }

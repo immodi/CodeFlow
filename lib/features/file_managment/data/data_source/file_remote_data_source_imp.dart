@@ -93,7 +93,7 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
   Future<ReadSharedFileModel> readSharedFile(String fileShareUrl) async {
     final response = await networkServices.dio.get(
       'share',
-      queryParameters: {"fileShareUrl": fileShareUrl},
+      data: {"fileShareCode": fileShareUrl},
     );
     return ReadSharedFileModel.fromJson(response.data);
   }

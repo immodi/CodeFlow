@@ -111,22 +111,33 @@ class FileViewModel extends ChangeNotifier {
   Future<FileShareModel?> shareFile(int fileId) async {
     final shareData = await _execute(() => fileUseCase.sharedFile(token, fileId));
     if (shareData != null) {
-      shareUrl = shareData.fileShareUrl;
+      shareUrl = shareData.fileShareCode;
       print("🔗 Shared File URL: $shareUrl");
       notifyListeners();
     }
     return shareData;
   }
 
-  Future<ReadSharedFileModel?> readSharedFile(String fileShareUrl) async {
-    final sharedFile = await _execute(() => fileUseCase.readSharedFile(fileShareUrl));
+  Future<void> readSharedFile(String fileShareCode) async {
+    final sharedFile = await _execute(() => fileUseCase.readSharedFile(fileShareCode));
+
     if (sharedFile != null) {
-      shareUrl = fileShareUrl;
-      print("📜 Read Shared File: $sharedFile");
+      // 🛠️ حوّل ReadSharedFileModel إلى FileDetailModel
+      selectedFile = FileDetailModel(
+        fileId: 0, // ممكن تحط ID وهمي أو تسيبه زي ما هو لو مش مهم
+        fileName: sharedFile.fileName,
+        fileContent: sharedFile.fileContent,
+        fileCreationDate: sharedFile.dateTime,
+        lastModifiedDate: sharedFile.dateTime,
+        fileSizeInBytes: sharedFile.fileSizeInBytes,
+      );
+
+      shareUrl = fileShareCode;
+      print("📜 Read Shared File: ${selectedFile!.fileName}");
       notifyListeners();
     }
-    return sharedFile;
   }
+
 
   void clearShareUrl() {
     shareUrl = null;

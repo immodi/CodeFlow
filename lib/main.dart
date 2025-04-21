@@ -105,10 +105,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute:
-            token != null
-                ? AppRoutesName.mainLayout
-                : AppRoutesName.loginScreen,
+        initialRoute:AppRoutesName.splash,
         routes: AppRoutes.routes,
       ),
     );

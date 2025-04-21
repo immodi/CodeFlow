@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../data/models/chat_bot_model.dart';
 import '../../domain/use_cases/chat_bot_use_case.dart';
 
@@ -9,14 +8,14 @@ class ChatBotViewModel extends ChangeNotifier {
   bool isLoading = false;
   String? errorMessage;
   List<ChatBotModel> messages = [];
+  List<String> aiModels = [];
 
   ChatBotViewModel({required this.chatBotUseCase});
 
-  Future<void> sendMessage(String message) async {
+  Future<void> sendMessage(String message, {String? model}) async {
     isLoading = true;
     errorMessage = null;
 
-    // أضف رسالة المرسل قبل ما تبعت للـ API
     messages.add(ChatBotModel(
       message: message,
       response: '',
@@ -27,8 +26,8 @@ class ChatBotViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await chatBotUseCase.sendMessage(message);
-      messages.add(response); // أضف رسالة الـ AI
+      final response = await chatBotUseCase.sendMessage(message, model);
+      messages.add(response);
       print("🤖 AI: ${response.response}");
     } catch (e) {
       errorMessage = e.toString();
@@ -39,6 +38,23 @@ class ChatBotViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> getModels() async {
+    isLoading = true;
+    errorMessage = null;
+    notifyListeners();
+
+    try {
+      final result = await chatBotUseCase.getModels();
+      aiModels = result.allModels;
+      print("📦 Models loaded: $aiModels");
+    } catch (e) {
+      errorMessage = e.toString();
+      print("❌ Get Models Error: $errorMessage");
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
 
   void clearMessages() {
     messages.clear();

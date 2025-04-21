@@ -1,5 +1,7 @@
+import 'package:graduation_project/features/main_layout/chat_bot_tab/data/models/ai_models_model.dart';
 import 'package:graduation_project/features/main_layout/chat_bot_tab/data/models/chat_bot_model.dart';
 
-abstract class ChatbotDataSource {
- Future<ChatBotModel> sendMessage(String message);
+abstract class ChatBotDataSource {
+ Future<ChatBotModel> sendMessage(String message, [String? model]);
+ Future<AiModelsResponse> getModels();
 }

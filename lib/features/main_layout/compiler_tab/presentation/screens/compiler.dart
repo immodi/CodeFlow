@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:flutter_highlight/themes/monokai-sublime.dart';
 import 'package:graduation_project/features/main_layout/compiler_tab/presentation/widgets/bottom_buttons.dart';
@@ -10,6 +11,7 @@ import 'package:graduation_project/core/theme/app_colors.dart';
 import 'package:graduation_project/features/file_managment/presentation/manager/file_view_model.dart';
 import 'package:graduation_project/features/main_layout/compiler_tab/presentation/manager/compile_view_model.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../../../core/routes/app_routes_name.dart';
 import '../../../../file_managment/data/models/file_detail_model.dart';
 
@@ -205,14 +207,25 @@ class _CompilerScreenState extends State<CompilerScreen> {
                       },
                     ),
                     IconButton(
-                      icon: const Icon(
-                        Icons.share,
-                        color: AppColors.white,
-                      ),
+                      icon: const Icon(Icons.share, color: AppColors.white),
                       onPressed: () async {
+                        final file = fileViewModel.selectedFile;
+                        if (file == null) return;
 
+                        final shareData = await fileViewModel.shareFile(file.fileId);
+                        final shareUrl = shareData?.fileShareCode;
+                        final code = _codeController.text;
+
+                        if (shareUrl != null) {
+                          showShareOptionsBottomSheet(context, shareUrl, code);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Failed to generate share link")),
+                          );
+                        }
                       },
                     ),
+
                     IconButton(
                       icon: const Icon(Icons.settings, color: AppColors.white),
                       onPressed: () {},
@@ -226,4 +239,68 @@ class _CompilerScreenState extends State<CompilerScreen> {
       },
     );
   }
+  void showShareOptionsBottomSheet(BuildContext context, String shareUrl, String codeText) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.gray,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Wrap(
+          runSpacing: 15,
+          children: [
+            ListTile(
+              leading: Icon(Icons.link, color: Colors.white),
+              title: Text("Copy Link", style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Clipboard.setData(ClipboardData(text: shareUrl));
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Link copied to clipboard")),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.copy, color: Colors.white),
+              title: Text("Copy Code", style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Clipboard.setData(ClipboardData(text: codeText));
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Code copied to clipboard")),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.share, color: Colors.white),
+              title: Text("Share via WhatsApp", style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(context);
+                Share.share('Check this code: $shareUrl', subject: 'Shared Code');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.send, color: Colors.white),
+              title: Text("Share via Messenger", style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(context);
+                Share.share('Check this code: $shareUrl');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.camera_alt, color: Colors.white),
+              title: Text("Share via Instagram", style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(context);
+                Share.share('Check this code: $shareUrl');
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 }

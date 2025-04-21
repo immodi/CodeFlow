@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_project/core/theme/app_colors.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../file_managment/presentation/manager/file_view_model.dart';
+import '../../../compiler_tab/presentation/screens/compiler.dart';
 
 class ImportLinkScreen extends StatelessWidget {
-  const ImportLinkScreen({super.key});
+   ImportLinkScreen({super.key});
+  final TextEditingController _controller = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -34,20 +40,40 @@ class ImportLinkScreen extends StatelessWidget {
                 color: AppColors.lightGray,
               ),
               child: TextField(
+                controller: _controller,
                 style: const TextStyle(color: Colors.white),
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
-                  hintText: 'import your link',
+                  hintText: 'Enter Shared code',
                   hintStyle: TextStyle(color: AppColors.moreLightGray, fontSize: 13),
                   border: InputBorder.none,
                 ),
-              ),
+              )
+              ,
             ),
             SizedBox(height: 20,),
             InkWell(
-              onTap: () {
+              onTap: () async {
+                final code = _controller.text.trim();
+                if (code.isEmpty) return;
 
-              } ,
+                final fileViewModel = Provider.of<FileViewModel>(context, listen: false);
+
+                await fileViewModel.readSharedFile(code); // ما فيش نتيجة راجعة
+
+                if (fileViewModel.selectedFile != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => CompilerScreen()),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Invalid or expired code")),
+                  );
+                }
+              }
+
+              ,
               child: Container(
                 padding: EdgeInsets.all(15),
                 height: size.height * 0.06,
