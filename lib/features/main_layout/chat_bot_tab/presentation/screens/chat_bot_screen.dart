@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:graduation_project/core/app_assets/app_assets.dart';
 import 'package:graduation_project/core/theme/app_colors.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import '../manager/chat_bot_view_model.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_highlight/flutter_highlight.dart';
+import 'package:flutter_highlight/themes/monokai-sublime.dart';
+
+
 
 
 class ChatBotScreen extends StatefulWidget {
@@ -19,7 +26,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
   void initState() {
     super.initState();
     final viewModel = Provider.of<ChatBotViewModel>(context, listen: false);
-    viewModel.getModels(); // تحميل الموديلات من الAPI
+    viewModel.getModels();
   }
 
   @override
@@ -41,7 +48,6 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
           ),
           body: Column(
             children: [
-              /// 🧠 Dropdown لاختيار الموديل
               if (viewModel.aiModels.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -89,17 +95,21 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
                         alignment: isSender ? Alignment.topRight : Alignment.topLeft,
                         margin: const EdgeInsets.only(top: 10),
                         backGroundColor: AppColors.lightGray!,
-                        child: Text(
-                          textToDisplay,
-                          style: const TextStyle(color: Colors.white),
-                        ),
+                        child: _buildMessageContent(textToDisplay, isSender),
+
+
                       ),
                     );
                   },
                 ),
               ),
 
-              if (viewModel.isLoading) const CircularProgressIndicator(),
+              if (viewModel.isLoading)
+                SizedBox(
+                  height: 100,
+                  width: 100,
+                  child: Lottie.asset('assets/animation/chatBotLoader.json'),
+                ),
 
               if (viewModel.errorMessage != null)
                 Padding(
@@ -146,6 +156,96 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
           ),
         );
       },
+    );
+  }
+  Widget _buildMessageContent(String text, bool isSender) {
+    final codeRegExp = RegExp(r"```(\w+)?\n([\s\S]*?)```", multiLine: true);
+    final matches = codeRegExp.allMatches(text);
+
+    List<Widget> parts = [];
+    int currentIndex = 0;
+
+    for (final match in matches) {
+      if (match.start > currentIndex) {
+        final normalText = text.substring(currentIndex, match.start);
+        parts.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Text(
+              normalText.trim(),
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        );
+      }
+
+      // كود
+      final language = match.group(1) ?? 'plaintext';
+      final code = match.group(2) ?? '';
+
+      parts.add(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.8),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: HighlightView(
+                code,
+                language: language,
+                theme: monokaiSublimeTheme,
+                padding: const EdgeInsets.all(8),
+                textStyle: const TextStyle(fontFamily: 'monospace', fontSize: 13),
+              ),
+            ),
+            Align(
+              alignment: Alignment.topRight,
+              child: TextButton.icon(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: code));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Code copied to clipboard")),
+                  );
+                },
+                icon: const Icon(Icons.copy, size: 16,color: AppColors.white,),
+                label: const Text("Copy"),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.only(right: 4),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+
+      // نحدث المؤشر
+      currentIndex = match.end;
+    }
+
+    // باقي النص بعد آخر كود
+    if (currentIndex < text.length) {
+      final remaining = text.substring(currentIndex);
+      parts.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Text(
+            remaining.trim(),
+            style: const TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: parts,
     );
   }
 

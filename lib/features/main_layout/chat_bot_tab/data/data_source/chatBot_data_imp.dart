@@ -11,7 +11,7 @@ class ChatBotDataSourceImpl implements ChatBotDataSource {
   @override
   Future<ChatBotModel> sendMessage(String message, [String? model]) async {
     try {
-      final response = await networkServices.dio.get(
+      final response = await networkServices.dio.post(
         "ai",
         data: {
           if (model != null) "model": model,

@@ -37,7 +37,7 @@ class _MyProjectsScreenState extends State<MyProjectsScreen> {
             children: [
               Expanded(
                 child: fileViewModel.isLoading
-                    ? Center(child: CircularProgressIndicator())
+                    ? Center(child: CircularProgressIndicator(color: AppColors.white,))
                     : fileViewModel.files.isEmpty
                     ? Center(
                   child: Text(

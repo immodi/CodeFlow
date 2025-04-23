@@ -45,6 +45,8 @@ dependencies:
   share_plus:
   animate_do:
   smooth_page_indicator:
+  flutter_markdown:
+  lottie:
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -72,6 +74,7 @@ flutter:
      - assets/logos/
      - assets/icons/
      - assets/images/
+     - assets/animation/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
