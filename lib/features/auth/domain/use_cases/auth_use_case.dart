@@ -10,7 +10,16 @@ class AuthUseCase {
     return await repository.login(username, password);
   }
 
-  Future<AuthModel> register(String username, String password) async {
-    return await repository.register(username, password);
+  Future<AuthModel> register(String username, String password, String email) async {
+    return await repository.register(username, password, email);
+  }
+
+  Future<void> requestPasswordReset(String username) async {
+    return await repository.requestPasswordReset(username);
+  }
+
+  Future<AuthModel> resetPassword(String code, String username, String newPassword) async {
+    return await repository.resetPassword(code, username, newPassword);
   }
 }
+

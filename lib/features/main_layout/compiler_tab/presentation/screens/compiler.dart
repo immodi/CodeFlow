@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:flutter_highlight/themes/monokai-sublime.dart';
-import 'package:graduation_project/features/main_layout/compiler_tab/presentation/widgets/bottom_buttons.dart';
 import 'package:highlight/languages/python.dart';
 import 'package:highlight/languages/javascript.dart';
 import 'package:highlight/languages/java.dart';
@@ -14,8 +13,10 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../../../core/routes/app_routes_name.dart';
 import '../../../../file_managment/data/models/file_detail_model.dart';
+import '../../../home/manager/home_tab_controller.dart';
 
 class CompilerScreen extends StatefulWidget {
+
   const CompilerScreen({super.key});
 
   @override
@@ -24,7 +25,7 @@ class CompilerScreen extends StatefulWidget {
 
 class _CompilerScreenState extends State<CompilerScreen> {
   late CodeController _codeController;
-  String? selectedLanguage;
+  String? selectedLanguage = "python";
   final Map<String, dynamic> languageMap = {
     "python": python,
     "javascript": javascript,
@@ -35,9 +36,10 @@ class _CompilerScreenState extends State<CompilerScreen> {
   @override
   void initState() {
     super.initState();
-    _codeController = CodeController(text: '', language: python);
+    _codeController = CodeController(text: '', language: python,);
 
     Future.microtask(() {
+      print('[CompilerScreen] initState → Fetching supported languages...');
       Provider.of<CompileViewModel>(
         context,
         listen: false,
@@ -48,12 +50,19 @@ class _CompilerScreenState extends State<CompilerScreen> {
 
   void _loadFileContent() {
     final fileViewModel = Provider.of<FileViewModel>(context, listen: false);
-    if (fileViewModel.selectedFile != null) {
-      _updateCodeController(fileViewModel.selectedFile!);
+    final selectedFile = fileViewModel.selectedFile;
+
+    if (selectedFile != null) {
+
+      _updateCodeController(selectedFile);
+    } else {
     }
   }
 
+
+
   void _updateCodeController(FileDetailModel file) {
+
     setState(() {
       _codeController = CodeController(
         text: file.fileContent ?? '',
@@ -61,6 +70,9 @@ class _CompilerScreenState extends State<CompilerScreen> {
       );
     });
   }
+
+
+
 
   Future<void> _executeCode(BuildContext context) async {
     final navigatorKey = Navigator.of(context);
@@ -79,7 +91,6 @@ class _CompilerScreenState extends State<CompilerScreen> {
       navigatorKey.pop();
 
       if (compiler.compileResult != null) {
-        print('Compile Result: ${compiler.compileResult?.output}');
         await navigatorKey.pushNamed(
           AppRoutesName.output,
           arguments: compiler.compileResult,
@@ -97,6 +108,8 @@ class _CompilerScreenState extends State<CompilerScreen> {
     }
   }
 
+
+
   @override
   void dispose() {
     _codeController.dispose();
@@ -112,9 +125,21 @@ class _CompilerScreenState extends State<CompilerScreen> {
         return Scaffold(
           appBar: AppBar(
             backgroundColor: AppColors.gray,
-            iconTheme: const IconThemeData(color: AppColors.white),
+
             title: Row(
               children: [
+                IconButton(onPressed: () {
+                  final homeTabController = Provider.of<HomeTabController>(context, listen: false);
+                  if(fileViewModel.fileCreated){
+                    homeTabController.changeTab(0);
+                  }
+                  if(fileViewModel.readFile){
+                    homeTabController.changeTab(1);
+                  }
+
+
+                }, icon: Icon(Icons.arrow_back,color: Colors.white,)),
+                Spacer(),
                 Text(
                   fileViewModel.selectedFile?.fileName ??
                       'No file selected', // إذا كان fileName فارغًا، يعرض "No file selected"
@@ -171,7 +196,7 @@ class _CompilerScreenState extends State<CompilerScreen> {
                     textStyle: const TextStyle(fontSize: 14),
                     gutterStyle: GutterStyle(
                       textStyle: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -179,7 +204,7 @@ class _CompilerScreenState extends State<CompilerScreen> {
               ),
               Container(
                 width: double.infinity,
-                height: MediaQuery.of(context).size.height * 0.07,
+                height: MediaQuery.of(context).size.height * 0.05,
                 padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom,
                 ),
@@ -202,10 +227,12 @@ class _CompilerScreenState extends State<CompilerScreen> {
                         );
 
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("تم حفظ الملف بنجاح")),
+                          SnackBar(content: Text("saved")),
                         );
                       },
                     ),
+
+
                     IconButton(
                       icon: const Icon(Icons.share, color: AppColors.white),
                       onPressed: () async {
@@ -226,10 +253,7 @@ class _CompilerScreenState extends State<CompilerScreen> {
                       },
                     ),
 
-                    IconButton(
-                      icon: const Icon(Icons.settings, color: AppColors.white),
-                      onPressed: () {},
-                    ),
+
                   ],
                 ),
               ),

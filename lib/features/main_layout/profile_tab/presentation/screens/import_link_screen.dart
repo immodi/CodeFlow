@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../file_managment/presentation/manager/file_view_model.dart';
 import '../../../compiler_tab/presentation/screens/compiler.dart';
+import '../../../home/manager/home_tab_controller.dart';
 
 class ImportLinkScreen extends StatelessWidget {
    ImportLinkScreen({super.key});
@@ -13,16 +14,30 @@ class ImportLinkScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+    final fileViewModel = Provider.of<FileViewModel>(context, listen: false);
+
     return Scaffold(
       backgroundColor: AppColors.gray,
       appBar: AppBar(
         backgroundColor: AppColors.gray,
-        iconTheme: IconThemeData(color: AppColors.white, size: 27),
-        centerTitle: true,
-        title: Text(
-          'Import Link',
-          style: TextStyle(color: AppColors.white, fontSize: 20),
+        title: Row(
+          children: [
+            IconButton(onPressed: () {
+              final homeTabController = Provider.of<HomeTabController>(context, listen: false);
+              homeTabController.changeTab(0);
+
+            }, icon: Icon(Icons.arrow_back,color: AppColors.white,)),
+            Spacer(),
+            Text(
+              'Import Link',
+              style: TextStyle(color: AppColors.white, fontSize: 20),
+            ),
+            SizedBox(width: size.width*0.3,)
+
+          ],
         ),
+        centerTitle: true,
+
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
@@ -54,22 +69,24 @@ class ImportLinkScreen extends StatelessWidget {
             SizedBox(height: 20,),
             InkWell(
               onTap: () async {
+                final homeTabController = Provider.of<HomeTabController>(context, listen: false);
+
                 final code = _controller.text.trim();
                 if (code.isEmpty) return;
 
-                final fileViewModel = Provider.of<FileViewModel>(context, listen: false);
 
                 await fileViewModel.readSharedFile(code); // ما فيش نتيجة راجعة
 
                 if (fileViewModel.selectedFile != null) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => CompilerScreen()),
-                  );
+                  homeTabController.changeTab(2);
+
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("Invalid or expired code")),
                   );
+                  if(fileViewModel.isLoading){
+                    CircularProgressIndicator(color: AppColors.white,);
+                  }
                 }
               }
 
@@ -88,7 +105,8 @@ class ImportLinkScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Get Code',
+                      fileViewModel.isLoading?
+                      'Getting Code...':'Get Code',
                       style: TextStyle(
                         color: AppColors.white,
                         fontSize: 13,

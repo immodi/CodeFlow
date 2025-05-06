@@ -5,7 +5,6 @@ import 'package:graduation_project/core/theme/app_colors.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import '../manager/chat_bot_view_model.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/monokai-sublime.dart';
@@ -25,9 +24,11 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
   @override
   void initState() {
     super.initState();
-    final viewModel = Provider.of<ChatBotViewModel>(context, listen: false);
-    viewModel.getModels();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ChatBotViewModel>(context, listen: false).getModels();
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -38,13 +39,8 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
           backgroundColor: AppColors.gray,
           appBar: AppBar(
             backgroundColor: AppColors.gray,
-            title: Row(
-              children: [
-                Image.asset(AppAssets.appLogo, width: size.width * 0.2),
-                const SizedBox(width: 10),
-                const Text('Code Flow ChatBOT', style: TextStyle(color: AppColors.white, fontSize: 13)),
-              ],
-            ),
+            title: Text('ChatBot',style: TextStyle(color: AppColors.white,fontSize: 20,fontWeight: FontWeight.bold),),
+            centerTitle: true,
           ),
           body: Column(
             children: [

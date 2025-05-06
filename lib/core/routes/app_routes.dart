@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:graduation_project/features/auth/presentation/screens/forget_password_screen.dart';
+import 'package:graduation_project/features/auth/presentation/screens/forget_password_screen2.dart';
 import 'package:graduation_project/features/auth/presentation/screens/login_screen.dart';
 import 'package:graduation_project/features/auth/presentation/screens/register_screen.dart';
+import 'package:graduation_project/features/auth/presentation/screens/reset_password_screen.dart';
 import 'package:graduation_project/features/main_layout/chat_bot_tab/presentation/screens/chat_bot_screen.dart';
 import 'package:graduation_project/features/main_layout/compiler_tab/presentation/screens/compiler.dart';
 import 'package:graduation_project/features/main_layout/compiler_tab/presentation/screens/output_screen.dart';
+import 'package:graduation_project/features/main_layout/home/presentation/screens/home_screen.dart';
 import 'package:graduation_project/features/main_layout/main_layout.dart';
 import 'package:graduation_project/features/main_layout/profile_tab/presentation/screens/import_link_screen.dart';
 import 'package:graduation_project/features/main_layout/profile_tab/presentation/screens/my_projects_screen.dart';
+import 'package:graduation_project/features/main_layout/profile_tab/presentation/screens/profile_details.dart';
 import 'package:graduation_project/features/onboarding/screens/onboarding.dart';
 import 'package:graduation_project/features/splash.dart';
 import '../../features/main_layout/compiler_tab/presentation/screens/code_editor.dart';
@@ -28,6 +33,11 @@ class AppRoutes {
     AppRoutesName.importLinkScreen: (_) => ImportLinkScreen(),
     AppRoutesName.splash: (_) => Splash(),
     AppRoutesName.onboarding: (_) => OnboardingScreen(),
+    AppRoutesName.profileDetails: (_) => ProfileDetails(),
+    AppRoutesName.forgetPassword1: (_) => ForgetPasswordScreen(),
+    AppRoutesName.forgetPassword2: (_) => ForgetPasswordScreen2(),
+    AppRoutesName.resetPassword: (_) => ResetPasswordScreen(),
+    AppRoutesName.homeScreen: (_) => HomeScreen(),
 
 
 

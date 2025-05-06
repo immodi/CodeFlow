@@ -9,61 +9,18 @@ import '../../../../core/theme/app_colors.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_feild.dart';
 
-// class RegisterScreen extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: Text('تسجيل حساب جديد')),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Consumer<AuthViewModel>(
-//           builder: (context, viewModel, child) {
-//             return Column(
-//               children: [
-//                 TextField(
-//                   controller: viewModel.usernameController,
-//                   decoration: InputDecoration(labelText: 'اسم المستخدم'),
-//                 ),
-//                 TextField(
-//                   controller: viewModel.passwordController,
-//                   obscureText: true,
-//                   decoration: InputDecoration(labelText: 'كلمة المرور'),
-//                 ),
-//                 SizedBox(height: 16),
-//                 if (viewModel.isLoading) CircularProgressIndicator(),
-//                 if (viewModel.errorMessage != null)
-//                   Text(viewModel.errorMessage!, style: TextStyle(color: Colors.red)),
-//                 ElevatedButton(
-//                   onPressed: () async {
-//                     await viewModel.register(
-//                       viewModel.usernameController.text,
-//                       viewModel.passwordController.text,
-//                     );
-//                     if (viewModel.isSuccess) {
-//                       viewModel.resetStatus();
-//                       Navigator.pop(context);
-//                     }
-//                   },
-//                   child: Text('تسجيل'),
-//                 ),
-//               ],
-//             );
-//           },
-//         ),
-//       ),
-//     );
-//   }
-//
+
 
 class RegisterScreen extends StatelessWidget {
-  const RegisterScreen({super.key});
+   RegisterScreen({super.key});
+  final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    final formKey = GlobalKey<FormState>();
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: AppColors.gray,
       body: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -107,7 +64,7 @@ class RegisterScreen extends StatelessWidget {
                     ),
                     SizedBox(height: size.height * 0.01),
                     CustomTextField(
-                      controller: viewModel.usernameController,
+                      controller: viewModel.emailController,
                       hintText: 'Enter your email',
                       icon: Icons.mail_rounded,
                       validator: (value) {
@@ -141,20 +98,31 @@ class RegisterScreen extends StatelessWidget {
                       text: 'Sign Up',
                       onTap: () async {
                         if (formKey.currentState?.validate() ?? false) {
-                          await viewModel.login(
+                          await viewModel.register(
                             viewModel.usernameController.text,
                             viewModel.passwordController.text,
+                            viewModel.emailController.text,
                           );
+
                           if (viewModel.isSuccess) {
+                            viewModel.resetStatus();
                             Navigator.pushReplacementNamed(
                               context,
-                              AppRoutesName.compilerScreen,
+                              AppRoutesName.mainLayout,
+                            );
+                          } else if (viewModel.errorMessage != null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(viewModel.errorMessage!),
+                                backgroundColor: Colors.red,
+                              ),
                             );
                           }
                         }
                       },
                       isLoading: viewModel.isLoading,
                     ),
+
                     SizedBox(height: size.height * 0.029),
                     Row(
                       children: [

@@ -14,6 +14,7 @@ import 'package:graduation_project/features/main_layout/chat_bot_tab/data/data_s
 import 'package:graduation_project/features/main_layout/chat_bot_tab/data/repo/chat_bot_repo_imp.dart';
 import 'package:graduation_project/features/main_layout/chat_bot_tab/domain/use_cases/chat_bot_use_case.dart';
 import 'package:graduation_project/features/main_layout/chat_bot_tab/presentation/manager/chat_bot_view_model.dart';
+import 'package:graduation_project/features/main_layout/home/manager/home_tab_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'features/main_layout/compiler_tab/data/data_source/compile_data_source_imp.dart';
@@ -24,11 +25,9 @@ import 'features/main_layout/compiler_tab/presentation/manager/compile_view_mode
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ✅ استرجاع التوكن
   final prefs = await SharedPreferences.getInstance();
   final token = prefs.getString('token');
 
-  // ✅ تجهيز NetworkServices وتحديث التوكن لو موجود
   final networkServices = NetworkServices();
   if (token != null) {
     networkServices.updateToken(token);
@@ -83,25 +82,25 @@ class MyApp extends StatelessWidget {
 
     return MultiProvider(
       providers: [
-        //  Auth ViewModel
         ChangeNotifierProvider(
           create: (_) => AuthViewModel(authUseCase: authUseCase),
         ),
         ChangeNotifierProvider(
           create:
               (_) =>
-                  FileViewModel(fileUseCase: fileUseCase, token: token ?? ""),
+                  FileViewModel(fileUseCase: fileUseCase),
         ),
         ChangeNotifierProvider(
           create:
               (_) => CompileViewModel(
                 compileFeatureUseCase: compileFeatureUseCase,
-                token: token ?? "",
+
               ),
         ),
         ChangeNotifierProvider(
             create:
                 (_) => ChatBotViewModel(chatBotUseCase: chatBotUseCase )),
+        ChangeNotifierProvider(create: (context) => HomeTabController(),)
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -1,8 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:graduation_project/core/routes/app_routes_name.dart';
 import 'package:graduation_project/core/theme/app_colors.dart';
 import 'package:graduation_project/features/file_managment/presentation/manager/file_view_model.dart';
 import 'package:provider/provider.dart';
+
+import '../../../home/manager/home_tab_controller.dart';
 
 class MyProjectsScreen extends StatefulWidget {
   const MyProjectsScreen({super.key});
@@ -28,7 +32,11 @@ class _MyProjectsScreenState extends State<MyProjectsScreen> {
       builder: (context, fileViewModel, child) => Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.gray,
-          iconTheme: IconThemeData(color: AppColors.white),
+          title: IconButton(onPressed: () {
+            final homeTabController = Provider.of<HomeTabController>(context, listen: false);
+            homeTabController.changeTab(0);
+
+          }, icon: Icon(Icons.arrow_back,color: AppColors.white,)),
         ),
         backgroundColor: AppColors.gray,
         body: Padding(
@@ -37,7 +45,7 @@ class _MyProjectsScreenState extends State<MyProjectsScreen> {
             children: [
               Expanded(
                 child: fileViewModel.isLoading
-                    ? Center(child: CircularProgressIndicator(color: AppColors.white,))
+                    ? Center(child: CircularProgressIndicator(color:Colors.white,))
                     : fileViewModel.files.isEmpty
                     ? Center(
                   child: Text(
@@ -50,31 +58,31 @@ class _MyProjectsScreenState extends State<MyProjectsScreen> {
                   itemBuilder: (context, index) {
                     final file = fileViewModel.files[index];
                     return InkWell(
-                        onTap: () {
-                          final navigatorKey = Navigator.of(context);
+                      onTap: () {
+                        final navigatorKey = Navigator.of(context);
+                        final homeTabController = Provider.of<HomeTabController>(context, listen: false);
 
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (_) => const Center(child: CircularProgressIndicator()),
-                          );
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (_) => const Center(child: CircularProgressIndicator(color:Colors.white,)),
+                        );
 
-                          Future(() async {
-                            try {
-                              await Provider.of<FileViewModel>(context, listen: false)
-                                  .readSingleFile(file.fileId);
-
-                              navigatorKey.pop();
-                              navigatorKey.pushNamed(AppRoutesName.compiler);
-
-                            } catch (e) {
-                              navigatorKey.pop();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Error: ${e.toString()}')),
-                              );
-                            }
-                          });
-                        },
+                        Future(() async {
+                          try {
+                            await Provider.of<FileViewModel>(context, listen: false)
+                                .readSingleFile(file.fileId);
+                            print(e.toString());
+                            navigatorKey.pop();
+                            homeTabController.changeTab(2);
+                          } catch (e) {
+                            navigatorKey.pop();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error: ${e.toString()}')),
+                            );
+                          }
+                        });
+                      },
                       child: Container(
                         padding: EdgeInsets.all(10),
                         margin: EdgeInsets.all(6),

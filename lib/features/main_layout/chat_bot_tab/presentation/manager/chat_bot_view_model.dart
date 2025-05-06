@@ -28,10 +28,8 @@ class ChatBotViewModel extends ChangeNotifier {
     try {
       final response = await chatBotUseCase.sendMessage(message, model);
       messages.add(response);
-      print("🤖 AI: ${response.response}");
     } catch (e) {
       errorMessage = e.toString();
-      print("❌ ChatBot Error: $errorMessage");
     } finally {
       isLoading = false;
       notifyListeners();
@@ -46,10 +44,8 @@ class ChatBotViewModel extends ChangeNotifier {
     try {
       final result = await chatBotUseCase.getModels();
       aiModels = result.allModels;
-      print("📦 Models loaded: $aiModels");
     } catch (e) {
       errorMessage = e.toString();
-      print("❌ Get Models Error: $errorMessage");
     } finally {
       isLoading = false;
       notifyListeners();

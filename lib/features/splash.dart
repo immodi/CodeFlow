@@ -20,7 +20,7 @@ class _SplashState extends State<Splash> {
   }
 
   void _checkFlow() async {
-    await Future.delayed(Duration(seconds: 2)); // علشان الانيميشن يشتغل
+    await Future.delayed(Duration(seconds: 2));
 
     final prefs = await SharedPreferences.getInstance();
     final seenOnboarding = prefs.getBool('onboarding_seen') ?? false;

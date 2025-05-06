@@ -3,7 +3,6 @@ import 'package:graduation_project/core/routes/app_routes_name.dart';
 import 'package:graduation_project/features/auth/presentation/widgets/custom_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-
 import '../../../core/theme/app_colors.dart';
 import '../category/category.dart';
 
@@ -31,7 +30,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _onNextPressed() async {
-    if (buttonText == "Finish") {
+    if (buttonText == "Get Started") {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('onboarding_seen', true);
 

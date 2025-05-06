@@ -12,4 +12,9 @@ class AppRoutesName{
   static const String output = 'output';
   static const String importLinkScreen = 'importLinkScreen';
   static const String onboarding = 'onboarding';
+  static const String profileDetails = 'profileDetails';
+  static const String forgetPassword1 = 'forgetPassword1';
+  static const String forgetPassword2 = 'forgetPassword2';
+  static const String resetPassword = 'resetPassword';
+  static const String homeScreen = 'homeScreen';
 }
