@@ -2,13 +2,13 @@ class CompileModel {
   final String dateTime;
   final int statusCode;
   final String output;
-  final String? errorMessage;
+  final bool? isSuccess;
 
   CompileModel({
     required this.dateTime,
     required this.statusCode,
     required this.output,
-    this.errorMessage,
+    this.isSuccess,
   });
 
   factory CompileModel.fromJson(Map<String, dynamic> json) {
@@ -16,7 +16,7 @@ class CompileModel {
       dateTime: json["dateTime"],
       statusCode: json["statusCode"],
       output: json["output"] ?? "",
-      errorMessage: json["errorMessage"],
+      isSuccess: json["isSuccess"],
     );
   }
 }

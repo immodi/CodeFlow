@@ -25,19 +25,23 @@ class _SplashState extends State<Splash> {
     final prefs = await SharedPreferences.getInstance();
     final seenOnboarding = prefs.getBool('onboarding_seen') ?? false;
     final token = prefs.getString('token');
+    final rememberMe = prefs.getBool('rememberMe') ?? false;
 
     if (!mounted) return;
 
     if (!seenOnboarding) {
       Navigator.pushReplacementNamed(context, AppRoutesName.onboarding);
     } else {
-      if (token != null) {
+      if (token != null && rememberMe) {
+        // ✅ المستخدم مفعّل rememberMe ومعاه توكن، يدخل على طول
         Navigator.pushReplacementNamed(context, AppRoutesName.mainLayout);
       } else {
+        // ✅ يا إما مفيش توكن، يا إما مش مفعّل rememberMe
         Navigator.pushReplacementNamed(context, AppRoutesName.loginScreen);
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

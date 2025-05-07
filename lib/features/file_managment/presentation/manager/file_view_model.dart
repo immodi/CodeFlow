@@ -3,6 +3,7 @@ import '../../../../core/services/network_services.dart';
 import '../../data/models/file_model.dart';
 import '../../data/models/file_shared_model.dart';
 import '../../data/models/file_detail_model.dart';
+import '../../data/models/update_shared_file_model.dart';
 import '../../domain/use_cases/file_use_case.dart';
 
 class FileViewModel extends ChangeNotifier {
@@ -18,6 +19,12 @@ class FileViewModel extends ChangeNotifier {
   String? shareUrl;
   bool fileCreated = false;
   bool readFile = false;
+  bool isSharedFile = false;
+
+
+  final TextEditingController sharedCodeController = TextEditingController();
+
+
 
 
 
@@ -123,7 +130,7 @@ class FileViewModel extends ChangeNotifier {
     final sharedFile = await _execute(() => fileUseCase.readSharedFile(fileShareCode));
 
     if (sharedFile != null) {
-      // 🛠️ حوّل ReadSharedFileModel إلى FileDetailModel
+      isSharedFile = true;
       selectedFile = FileDetailModel(
         fileId: 0, // ممكن تحط ID وهمي أو تسيبه زي ما هو لو مش مهم
         fileName: sharedFile.fileName,
@@ -137,6 +144,26 @@ class FileViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+  UpdateSharedFileModel? updatedSharedFile;
+
+  Future<void> updateSharedFile({
+    required String fileShareCode,
+    String? newFileName,
+    String? newFileContent,
+  }) async {
+    final result = await _execute(() => fileUseCase.updateSharedFile(
+      fileShareCode: fileShareCode,
+      newFileName: newFileName,
+      newFileContent: newFileContent,
+    ));
+
+    if (result != null) {
+      updatedSharedFile = result;
+      print("✅ Shared File Updated: ${result.fileName}");
+      notifyListeners();
+    }
+  }
+
 
 
   void clearShareUrl() {

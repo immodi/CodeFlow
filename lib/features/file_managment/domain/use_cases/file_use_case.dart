@@ -3,6 +3,7 @@ import '../../data/models/file_detail_model.dart';
 import '../../data/models/file_model.dart';
 import '../../data/models/file_shared_model.dart';
 import '../../data/models/read_file_shared_model.dart';
+import '../../data/models/update_shared_file_model.dart';
 import '../repo/file_repository.dart';
 
 class FileUseCase {
@@ -17,4 +18,14 @@ class FileUseCase {
   Future<bool> deleteFile(String token, int fileId) => repository.deleteFile(token, fileId);
   Future<FileShareModel> sharedFile(String token, int fileId) => repository.sharedFile(token, fileId);
   Future<ReadSharedFileModel> readSharedFile(String fileShareUrl) => repository.readSharedFile(fileShareUrl);
+  Future<UpdateSharedFileModel> updateSharedFile({
+    required String fileShareCode,
+    String? newFileName,
+    String? newFileContent,
+  }) => repository.updateSharedFile(
+    fileShareCode: fileShareCode,
+    newFileName: newFileName,
+    newFileContent: newFileContent,
+  );
+
 }

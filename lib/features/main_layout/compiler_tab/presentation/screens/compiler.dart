@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:flutter_highlight/themes/monokai-sublime.dart';
+import 'package:highlight/languages/cpp.dart';
 import 'package:highlight/languages/python.dart';
 import 'package:highlight/languages/javascript.dart';
 import 'package:highlight/languages/java.dart';
@@ -16,7 +17,6 @@ import '../../../../file_managment/data/models/file_detail_model.dart';
 import '../../../home/manager/home_tab_controller.dart';
 
 class CompilerScreen extends StatefulWidget {
-
   const CompilerScreen({super.key});
 
   @override
@@ -31,12 +31,14 @@ class _CompilerScreenState extends State<CompilerScreen> {
     "javascript": javascript,
     "csharp": cs,
     "java": java,
+    "cpp": cpp,
+
   };
 
   @override
   void initState() {
     super.initState();
-    _codeController = CodeController(text: '', language: python,);
+    _codeController = CodeController(text: '', language: python);
 
     Future.microtask(() {
       print('[CompilerScreen] initState → Fetching supported languages...');
@@ -53,16 +55,11 @@ class _CompilerScreenState extends State<CompilerScreen> {
     final selectedFile = fileViewModel.selectedFile;
 
     if (selectedFile != null) {
-
       _updateCodeController(selectedFile);
-    } else {
-    }
+    } else {}
   }
 
-
-
   void _updateCodeController(FileDetailModel file) {
-
     setState(() {
       _codeController = CodeController(
         text: file.fileContent ?? '',
@@ -70,9 +67,6 @@ class _CompilerScreenState extends State<CompilerScreen> {
       );
     });
   }
-
-
-
 
   Future<void> _executeCode(BuildContext context) async {
     final navigatorKey = Navigator.of(context);
@@ -108,8 +102,6 @@ class _CompilerScreenState extends State<CompilerScreen> {
     }
   }
 
-
-
   @override
   void dispose() {
     _codeController.dispose();
@@ -128,17 +120,21 @@ class _CompilerScreenState extends State<CompilerScreen> {
 
             title: Row(
               children: [
-                IconButton(onPressed: () {
-                  final homeTabController = Provider.of<HomeTabController>(context, listen: false);
-                  if(fileViewModel.fileCreated){
-                    homeTabController.changeTab(0);
-                  }
-                  if(fileViewModel.readFile){
-                    homeTabController.changeTab(1);
-                  }
-
-
-                }, icon: Icon(Icons.arrow_back,color: Colors.white,)),
+                IconButton(
+                  onPressed: () {
+                    final homeTabController = Provider.of<HomeTabController>(
+                      context,
+                      listen: false,
+                    );
+                    if (fileViewModel.fileCreated) {
+                      homeTabController.changeTab(0);
+                    }
+                    if (fileViewModel.readFile) {
+                      homeTabController.changeTab(1);
+                    }
+                  },
+                  icon: Icon(Icons.arrow_back, color: Colors.white),
+                ),
                 Spacer(),
                 Text(
                   fileViewModel.selectedFile?.fileName ??
@@ -195,9 +191,7 @@ class _CompilerScreenState extends State<CompilerScreen> {
                     background: AppColors.gray,
                     textStyle: const TextStyle(fontSize: 14),
                     gutterStyle: GutterStyle(
-                      textStyle: TextStyle(
-                        color: Colors.white,
-                      ),
+                      textStyle: TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
@@ -217,21 +211,31 @@ class _CompilerScreenState extends State<CompilerScreen> {
                       onPressed: () async {
                         if (fileViewModel.selectedFile == null) return;
 
-                        int? fileId = fileViewModel.selectedFile?.fileId;
-                        if (fileId == null) return;
-
                         String newContent = _codeController.text;
-                        await fileViewModel.updateFile(
-                          fileId,
-                          newFileContent: newContent,
-                        );
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("saved")),
-                        );
+                        if (fileViewModel.isSharedFile) {
+                          // ✅ تحديث ملف متشين
+                          await fileViewModel.updateSharedFile(
+                            fileShareCode:
+                                fileViewModel.sharedCodeController.text,
+                            newFileContent: newContent,
+                          );
+                        } else {
+                          int? fileId = fileViewModel.selectedFile?.fileId;
+                          if (fileId == null) return;
+
+                          // ✅ تحديث ملف عادي
+                          await fileViewModel.updateFile(
+                            fileId,
+                            newFileContent: newContent,
+                          );
+                        }
+
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text("Save Changes")));
                       },
                     ),
-
 
                     IconButton(
                       icon: const Icon(Icons.share, color: AppColors.white),
@@ -239,7 +243,9 @@ class _CompilerScreenState extends State<CompilerScreen> {
                         final file = fileViewModel.selectedFile;
                         if (file == null) return;
 
-                        final shareData = await fileViewModel.shareFile(file.fileId);
+                        final shareData = await fileViewModel.shareFile(
+                          file.fileId,
+                        );
                         final shareUrl = shareData?.fileShareCode;
                         final code = _codeController.text;
 
@@ -247,13 +253,13 @@ class _CompilerScreenState extends State<CompilerScreen> {
                           showShareOptionsBottomSheet(context, shareUrl, code);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Failed to generate share link")),
+                            SnackBar(
+                              content: Text("Failed to generate share link"),
+                            ),
                           );
                         }
                       },
                     ),
-
-
                   ],
                 ),
               ),
@@ -263,68 +269,91 @@ class _CompilerScreenState extends State<CompilerScreen> {
       },
     );
   }
-  void showShareOptionsBottomSheet(BuildContext context, String shareUrl, String codeText) {
+
+  void showShareOptionsBottomSheet(
+    BuildContext context,
+    String shareUrl,
+    String codeText,
+  ) {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.gray,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Wrap(
-          runSpacing: 15,
-          children: [
-            ListTile(
-              leading: Icon(Icons.link, color: Colors.white),
-              title: Text("Copy Link", style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Clipboard.setData(ClipboardData(text: shareUrl));
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Link copied to clipboard")),
-                );
-              },
+      builder:
+          (_) => Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Wrap(
+              runSpacing: 15,
+              children: [
+                ListTile(
+                  leading: Icon(Icons.link, color: Colors.white),
+                  title: Text(
+                    "Copy Link",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: shareUrl));
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Link copied to clipboard")),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.copy, color: Colors.white),
+                  title: Text(
+                    "Copy Code",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: codeText));
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Code copied to clipboard")),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.share, color: Colors.white),
+                  title: Text(
+                    "Share via WhatsApp",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Share.share(
+                      'Check this code: $shareUrl',
+                      subject: 'Shared Code',
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.send, color: Colors.white),
+                  title: Text(
+                    "Share via Messenger",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Share.share('Check this code: $shareUrl');
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.camera_alt, color: Colors.white),
+                  title: Text(
+                    "Share via Instagram",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Share.share('Check this code: $shareUrl');
+                  },
+                ),
+              ],
             ),
-            ListTile(
-              leading: Icon(Icons.copy, color: Colors.white),
-              title: Text("Copy Code", style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Clipboard.setData(ClipboardData(text: codeText));
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Code copied to clipboard")),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.share, color: Colors.white),
-              title: Text("Share via WhatsApp", style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context);
-                Share.share('Check this code: $shareUrl', subject: 'Shared Code');
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.send, color: Colors.white),
-              title: Text("Share via Messenger", style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context);
-                Share.share('Check this code: $shareUrl');
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.camera_alt, color: Colors.white),
-              title: Text("Share via Instagram", style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context);
-                Share.share('Check this code: $shareUrl');
-              },
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
-
 }

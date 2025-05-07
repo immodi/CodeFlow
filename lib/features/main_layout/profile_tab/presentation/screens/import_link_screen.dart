@@ -8,7 +8,6 @@ import '../../../home/manager/home_tab_controller.dart';
 
 class ImportLinkScreen extends StatelessWidget {
    ImportLinkScreen({super.key});
-  final TextEditingController _controller = TextEditingController();
 
 
   @override
@@ -55,7 +54,7 @@ class ImportLinkScreen extends StatelessWidget {
                 color: AppColors.lightGray,
               ),
               child: TextField(
-                controller: _controller,
+                controller: fileViewModel.sharedCodeController,
                 style: const TextStyle(color: Colors.white),
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
@@ -71,7 +70,7 @@ class ImportLinkScreen extends StatelessWidget {
               onTap: () async {
                 final homeTabController = Provider.of<HomeTabController>(context, listen: false);
 
-                final code = _controller.text.trim();
+                final code = fileViewModel.sharedCodeController.text.trim();
                 if (code.isEmpty) return;
 
 

@@ -40,6 +40,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             child: Form(
               key: formKey,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: size.height * 0.05),
                   Image.asset(
@@ -47,22 +48,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     width: double.infinity,
                     height: size.height * 0.4,
                   ),
-                  Text(
-                    'Code Sent',
-                    style: TextStyle(color: AppColors.white),
-                    textAlign: TextAlign.center,
-                  ),
-                  Text(
-                    'Check Your Email',
-                    style: TextStyle(color: AppColors.white),
-                    textAlign: TextAlign.center,
-                  ),
+
                   SizedBox(height: size.height * 0.05),
 
                   CustomTextField(
                     controller: viewModel.usernameController,
                     hintText: 'Enter Username',
-                    icon: Icons.mail_rounded,
+                    icon: Icons.person,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter Username';
@@ -73,7 +65,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   CustomTextField(
                     controller: viewModel.newPasswordController,
                     hintText: 'Enter New Password',
-                    icon: Icons.mail_rounded,
+                    icon: Icons.lock,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter New Password';
@@ -81,34 +73,38 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       return null;
                     },
                   ),
-                  SizedBox(height: size.height * 0.03),
 
+
+                  SizedBox(height: size.height * 0.03),
+                  if (viewModel.showResetPasswordError)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      child: Center(
+                        child: Text(
+                          'Invalid code or username',
+                          style: TextStyle(color: Colors.red, fontSize: 16),
+                        ),
+                      ),
+                    ),
                   CustomButton(
-                    text: viewModel.isLoading ?'signing in...' : 'save',
-                      onTap: () async {
+                    text: viewModel.isLoading ? 'Saving...' : 'Save',
+                    onTap: () async {
                       if (formKey.currentState!.validate()) {
                         await viewModel
                             .resetPassword(
-                              code: viewModel.otpController.text,
-                              username: viewModel.usernameController.text,
-                              newPassword: viewModel.newPasswordController.text,
-                            )
+                          code: viewModel.otpController.text,
+                          username: viewModel.usernameController.text,
+                          newPassword: viewModel.newPasswordController.text,
+                        )
                             .then((_) {
-                              if (viewModel.isSuccess) {
-                                viewModel.resetStatus();
-                                Navigator.pushReplacementNamed(
-                                  context,
-                                  AppRoutesName.mainLayout,
-                                );
-                              } else if (viewModel.errorMessage != null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(viewModel.errorMessage!),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                              }
-                            });
+                          if (viewModel.isSuccess) {
+                            viewModel.resetStatus();
+                            Navigator.pushReplacementNamed(
+                              context,
+                              AppRoutesName.mainLayout,
+                            );
+                          }
+                        });
                       }
                     },
                   ),

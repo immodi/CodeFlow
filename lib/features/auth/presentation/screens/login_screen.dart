@@ -9,7 +9,6 @@ import 'package:graduation_project/core/routes/app_routes_name.dart';
 import 'package:graduation_project/features/auth/presentation/manager/auth_view_model.dart';
 import 'register_screen.dart';
 
-
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
@@ -49,6 +48,14 @@ class LoginScreen extends StatelessWidget {
                         style: TextStyle(color: Colors.white, fontSize: 20),
                       ),
                       SizedBox(height: size.height * 0.14),
+                      if (viewModel.showLoginError)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 5.0),
+                          child: Text(
+                            "Invalid username or password",
+                            style: TextStyle(color: Colors.red, fontSize: 12),
+                          ),
+                        ),
                       CustomTextField(
                         controller: viewModel.usernameController,
                         hintText: 'Enter your username',
@@ -75,11 +82,39 @@ class LoginScreen extends StatelessWidget {
                       ),
                       SizedBox(height: size.height * 0.01),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
+                          CheckboxTheme(
+                            data: CheckboxThemeData(
+                              side: BorderSide(
+                                color: Colors.white,
+                              ),
+                              // لون الحواف
+                              shape: CircleBorder(),
+                            ),
+                            child: Checkbox(value: viewModel.rememberMe,
+                              onChanged: (value) {
+                                if (value != null) {
+                                  viewModel.toggleRememberMe(value);
+                                }
+                              },
+                              activeColor: AppColors.lightGreen,
+                              shape: CircleBorder(),),
+                          ),
+                          SizedBox(width: 5),
+                          Text(
+                            'Remember me',
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 11,
+                            ),
+                          ),
+                          Spacer(),
                           InkWell(
                             onTap: () {
-                              Navigator.pushNamed(context, AppRoutesName.forgetPassword1);
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutesName.forgetPassword1,
+                              );
                             },
                             child: Text(
                               'Forget Password?',
@@ -139,7 +174,10 @@ class LoginScreen extends StatelessWidget {
                           ),
                           InkWell(
                             onTap: () {
-                              Navigator.pushReplacementNamed(context, AppRoutesName.registerScreen);
+                              Navigator.pushReplacementNamed(
+                                context,
+                                AppRoutesName.registerScreen,
+                              );
                             },
                             child: Text(
                               'Sign up',

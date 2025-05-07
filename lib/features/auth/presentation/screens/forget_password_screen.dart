@@ -47,11 +47,21 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                   height: size.height * 0.4,
                 ),
                 SizedBox(height: size.height * 0.05),
+                if (viewModel.showRequestResetPasswordError)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                    child: Center(
+                      child: Text(
+                        'Invalid username',
+                        style: TextStyle(color: Colors.red, fontSize: 16),
+                      ),
+                    ),
+                  ),
 
                 CustomTextField(
                   controller: viewModel.usernameController,
-                  hintText: 'Enter your Username',
-                  icon: Icons.mail_rounded,
+                  hintText: 'Enter your username',
+                  icon: Icons.person,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your username';

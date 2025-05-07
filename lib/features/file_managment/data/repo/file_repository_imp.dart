@@ -4,6 +4,7 @@ import '../models/file_detail_model.dart';
 import '../models/file_model.dart';
 import '../models/file_shared_model.dart';
 import '../models/read_file_shared_model.dart';
+import '../models/update_shared_file_model.dart';
 
 class FileRepositoryImpl implements FileRepository {
   final FileRemoteDataSource remoteDataSource;
@@ -29,5 +30,16 @@ class FileRepositoryImpl implements FileRepository {
 
   @override
   Future<ReadSharedFileModel> readSharedFile(String fileShareUrl) => remoteDataSource.readSharedFile(fileShareUrl);
+  @override
+  Future<UpdateSharedFileModel> updateSharedFile({
+    required String fileShareCode,
+    String? newFileName,
+    String? newFileContent,
+  }) => remoteDataSource.updateSharedFile(
+    fileShareCode: fileShareCode,
+    newFileName: newFileName,
+    newFileContent: newFileContent,
+  );
+
 
 }

@@ -9,6 +9,7 @@ class CompileViewModel extends ChangeNotifier {
   final token = NetworkServices().token;
 
   bool isLoading = false;
+  bool isSuccess =false;
   String? errorMessage;
   RootModel? rootModel;
   CompileModel? compileResult;

@@ -4,6 +4,7 @@ import '../models/file_detail_model.dart';
 import '../models/file_model.dart';
 import '../models/file_shared_model.dart';
 import '../models/read_file_shared_model.dart';
+import '../models/update_shared_file_model.dart';
 import 'file_remote_data_source.dart';
 
 class FileRemoteDataSourceImpl implements FileRemoteDataSource {
@@ -110,6 +111,26 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
 
     return FileDetailModel.fromJson(response.data, fileId);
   }
+  @override
+  Future<UpdateSharedFileModel> updateSharedFile({
+    required String fileShareCode,
+    String? newFileName,
+    String? newFileContent,
+  }) async {
+    final Map<String, dynamic> requestData = {
+      "fileShareCode": fileShareCode,
+      if (newFileName != null) "newFileName": newFileName,
+      if (newFileContent != null) "newFileContent": newFileContent,
+    };
+
+    final response = await networkServices.dio.patch(
+      'share',
+      data: requestData,
+    );
+
+    return UpdateSharedFileModel.fromJson(response.data);
+  }
+
 
 
 

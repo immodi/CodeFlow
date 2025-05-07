@@ -27,35 +27,22 @@ class CodeEditorScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: size.height * 0.07),
-                    Row(
-                      children: [
-                        Spacer(),
-                        Text(
-                          'Welcome!',
-                          style: TextStyle(
-                            color: AppColors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Spacer(),
-                      ],
+                    Text(
+                      'Welcome!',
+                      style: TextStyle(
+                        color: AppColors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     SizedBox(height: 15),
-                    Row(
-                      children: [
-                        Spacer(),
-                        Text(
-                          'Ready to start coding?',
-                          style: TextStyle(color: AppColors.white, fontSize: 15),
-                        ),
-                        Spacer(),
-                      ],
+                    Text(
+                      'Ready to start coding?',
+                      style: TextStyle(color: AppColors.white, fontSize: 15),
                     ),
                     SizedBox(height: size.height * 0.05),
                     Row(
                       children: [
-                        Spacer(),
 
                         Container(
                           height: size.height * 0.06,
@@ -100,7 +87,6 @@ class CodeEditorScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Spacer(),
 
                       ],
                     ),

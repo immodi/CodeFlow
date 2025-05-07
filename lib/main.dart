@@ -83,7 +83,12 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => AuthViewModel(authUseCase: authUseCase),
+            create: (_) {
+              final vm = AuthViewModel(authUseCase: authUseCase);
+              vm.loadRememberMeStatus(); // ✅ تحميل حالة rememberMe من SharedPreferences
+              return vm;
+            },
+
         ),
         ChangeNotifierProvider(
           create:
