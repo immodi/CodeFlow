@@ -33,125 +33,128 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return Consumer<ChatBotViewModel>(
-      builder: (context, viewModel, child) {
-        return Scaffold(
-          backgroundColor: AppColors.gray,
-          appBar: AppBar(
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Consumer<ChatBotViewModel>(
+        builder: (context, viewModel, child) {
+          return Scaffold(
             backgroundColor: AppColors.gray,
-            title: Text('ChatBot',style: TextStyle(color: AppColors.white,fontSize: 20,fontWeight: FontWeight.bold),),
-            centerTitle: true,
-          ),
-          body: Column(
-            children: [
-              if (viewModel.aiModels.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  child: DropdownButtonFormField<String>(
-                    dropdownColor: AppColors.lightGray,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: AppColors.lightGray,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                      labelText: 'Choose a model',
-                      labelStyle: const TextStyle(color: Colors.white),
+            appBar: AppBar(
+              backgroundColor: AppColors.gray,
+              title: Text('ChatBot',style: TextStyle(color: AppColors.white,fontSize: 20,fontWeight: FontWeight.bold),),
+              centerTitle: true,
+            ),
+            body: Column(
+              children: [
+                if (viewModel.aiModels.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    child: DropdownButtonFormField<String>(
+                      dropdownColor: AppColors.lightGray,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: AppColors.lightGray,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        labelText: 'Choose a model',
+                        labelStyle: const TextStyle(color: Colors.white),
+                      ),
+                      style: const TextStyle(color: Colors.white),
+                      value: selectedModel,
+                      items: viewModel.aiModels.map((model) {
+                        return DropdownMenuItem<String>(
+                          value: model,
+                          child: Text(model, style: const TextStyle(color: Colors.white)),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedModel = value;
+                        });
+                      },
                     ),
-                    style: const TextStyle(color: Colors.white),
-                    value: selectedModel,
-                    items: viewModel.aiModels.map((model) {
-                      return DropdownMenuItem<String>(
-                        value: model,
-                        child: Text(model, style: const TextStyle(color: Colors.white)),
+                  ),
+
+                /// 📨 الرسائل
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    itemCount: viewModel.messages.length,
+                    itemBuilder: (context, index) {
+                      final message = viewModel.messages[index];
+                      final isSender = message.response == '' && message.message.isNotEmpty;
+                      final textToDisplay = isSender ? message.message : message.response;
+
+                      return Align(
+                        alignment: isSender ? Alignment.topRight : Alignment.topLeft,
+                        child: ChatBubble(
+                          clipper: isSender
+                              ? ChatBubbleClipper1(type: BubbleType.sendBubble)
+                              : ChatBubbleClipper1(type: BubbleType.receiverBubble),
+                          alignment: isSender ? Alignment.topRight : Alignment.topLeft,
+                          margin: const EdgeInsets.only(top: 10),
+                          backGroundColor: AppColors.lightGray!,
+                          child: _buildMessageContent(textToDisplay, isSender),
+
+
+                        ),
                       );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedModel = value;
-                      });
                     },
                   ),
                 ),
 
-              /// 📨 الرسائل
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  itemCount: viewModel.messages.length,
-                  itemBuilder: (context, index) {
-                    final message = viewModel.messages[index];
-                    final isSender = message.response == '' && message.message.isNotEmpty;
-                    final textToDisplay = isSender ? message.message : message.response;
+                if (viewModel.isLoading)
+                  SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: Lottie.asset('assets/animation/chatBotLoader.json'),
+                  ),
 
-                    return Align(
-                      alignment: isSender ? Alignment.topRight : Alignment.topLeft,
-                      child: ChatBubble(
-                        clipper: isSender
-                            ? ChatBubbleClipper1(type: BubbleType.sendBubble)
-                            : ChatBubbleClipper1(type: BubbleType.receiverBubble),
-                        alignment: isSender ? Alignment.topRight : Alignment.topLeft,
-                        margin: const EdgeInsets.only(top: 10),
-                        backGroundColor: AppColors.lightGray!,
-                        child: _buildMessageContent(textToDisplay, isSender),
+                if (viewModel.errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Error: ${viewModel.errorMessage}',
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
 
-
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              if (viewModel.isLoading)
-                SizedBox(
-                  height: 100,
-                  width: 100,
-                  child: Lottie.asset('assets/animation/chatBotLoader.json'),
-                ),
-
-              if (viewModel.errorMessage != null)
+                /// ✍️ كتابة الرسالة وزر الإرسال
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Error: ${viewModel.errorMessage}',
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                ),
-
-              /// ✍️ كتابة الرسالة وزر الإرسال
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          color: AppColors.lightGray,
-                        ),
-                        child: TextField(
-                          controller: _messageController,
-                          style: const TextStyle(color: Colors.white),
-                          cursorColor: Colors.white,
-                          decoration: InputDecoration(
-                            hintText: 'Ask Anything',
-                            hintStyle: TextStyle(color: AppColors.moreLightGray, fontSize: 13),
-                            border: InputBorder.none,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: AppColors.lightGray,
                           ),
-                          onSubmitted: (_) => _sendMessage(context),
+                          child: TextField(
+                            controller: _messageController,
+                            style: const TextStyle(color: Colors.white),
+                            cursorColor: Colors.white,
+                            decoration: InputDecoration(
+                              hintText: 'Ask Anything',
+                              hintStyle: TextStyle(color: AppColors.moreLightGray, fontSize: 13),
+                              border: InputBorder.none,
+                            ),
+                            onSubmitted: (_) => _sendMessage(context),
+                          ),
                         ),
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.send, color: Colors.white),
-                      onPressed: () => _sendMessage(context),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        );
-      },
+                      IconButton(
+                        icon: const Icon(Icons.send, color: Colors.white),
+                        onPressed: () => _sendMessage(context),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
   Widget _buildMessageContent(String text, bool isSender) {

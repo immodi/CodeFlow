@@ -1,54 +1,159 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_project/core/theme/app_colors.dart';
 import 'package:graduation_project/features/auth/presentation/manager/auth_view_model.dart';
-import 'package:graduation_project/features/auth/presentation/widgets/custom_text_feild.dart';
+import 'package:graduation_project/language_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class ProfileDetails extends StatelessWidget {
+
+class ProfileDetails extends StatefulWidget {
   const ProfileDetails({super.key});
 
   @override
+  State<ProfileDetails> createState() => _ProfileDetailsState();
+}
+
+class _ProfileDetailsState extends State<ProfileDetails> {
+  @override
   Widget build(BuildContext context) {
-    return Consumer<AuthViewModel>(
-      builder: (context, authVM, child) =>
+    var size= MediaQuery.of(context).size;
+    return Consumer2<AuthViewModel,LanguageProvider>(
+      builder: (context, authVM, langProvider ,child) =>
           Scaffold(
             appBar: AppBar(
               backgroundColor: AppColors.gray,
               iconTheme: IconThemeData(color:AppColors.white ),
+              title: Row(
+                children: [
+                  Spacer(),
+                  Text('Profile',style: TextStyle(color: AppColors.white),),
+                  Spacer(),
+                  TextButton(
+                      onPressed: () {
+
+                      },
+                      child: Text('save',style: TextStyle(color: AppColors.white),)
+                  ),
+                ],
+              ),
+              centerTitle: true,
 
             ),
             backgroundColor: AppColors.gray,
-            body: Column(
-              children: [
-                Container(
-
-                  child: TextFormField(
-                    controller: authVM.usernameController,
-                    style: TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.circular(16),
+            body: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Name',style: TextStyle(color: AppColors.white,fontSize: 13),),
+                  SizedBox(height: 10,),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: AppColors.lightGray
+                    ),
+                    child: TextFormField(
+                      controller: authVM.usernameController,
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColors.lightGray),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColors.lightGray),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        hintStyle:  TextStyle(color: Colors.white70),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      hintStyle: const TextStyle(color: Colors.white70),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                     ),
                   ),
-                )
-              ],
+                  SizedBox(height: 20,),
+                  Text('Email',style: TextStyle(color: AppColors.white,fontSize: 13),),
+                  SizedBox(height: 10,),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: AppColors.lightGray
+                    ),
+                    child: TextFormField(
+                      controller: authVM.emailController,
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColors.lightGray),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColors.lightGray),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        hintStyle:  TextStyle(color: Colors.white70),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20,),
+                  Text('Language',style: TextStyle(color: AppColors.white,fontSize: 13),),
+                  Container(
+                   width: double.infinity,
+                    height: size.height*0.07,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: AppColors.lightGray
+                    ),
+                    child: Row(
+                      children: [
+
+                        DropdownButton<String>(
+                          value: langProvider.lang,
+                          dropdownColor: Colors.grey[850],
+                          style: const TextStyle(color: Colors.white),
+                          underline: SizedBox(),
+                          iconEnabledColor: Colors.white,
+                          items: langProvider.languages.entries.map((entry) {
+                            return DropdownMenuItem<String>(
+                              value: entry.key, // 'en' أو 'ar'
+                              child: Text(
+                                entry.value, // 'English' أو 'العربية'
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              langProvider.setLanguage(value);
+                            }
+                          },
+                        ),
+
+
+
+                      ],
+                    ),
+                  )
+
+                ],
+              ),
             ),
           )
       ,

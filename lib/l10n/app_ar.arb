@@ -1,0 +1,23 @@
+{
+  "welcome": "مرحبًا",
+  "ready": "جاهز للبدء في البرمجة",
+  "createNewFile": "إنشاء ملف جديد",
+  "noRecent": "لا توجد ملفات حديثة",
+  "startYourFirst":"ابدا مشروعك الجديد!",
+  "exploreOptions": "استكشاف الخيارات",
+  "openFolder": "فتح مجلد",
+  "Please enter file name": "ادخل اسم الملف",
+  "fileName": "اسم الملف",
+  "create": "إنشاء",  "cancel": "الغاء",
+  "profile": "حسابي",
+  "confirm Logout": "تأكيد تسجيل الخروج",
+  "are you sure you want to logout?": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+  "importCode": "استيراد كود",
+  "askAnything": "اسأل أي شيء",
+  "account": "الحساب",
+  "hi": "مرحبًا",
+  "myProjects": "مشاريعي",
+  "importLink": "رابط الاستيراد",
+  "aboutUs": "معلومات عنا",
+  "logout": "تسجيل الخروج"
+}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:graduation_project/core/routes/app_routes.dart';
 import 'package:graduation_project/core/routes/app_routes_name.dart';
 import 'package:graduation_project/core/services/network_services.dart';
@@ -21,6 +22,9 @@ import 'features/main_layout/compiler_tab/data/data_source/compile_data_source_i
 import 'features/main_layout/compiler_tab/data/repo/compile_repository_impl.dart';
 import 'features/main_layout/compiler_tab/domain/use_cases/compile_use_case.dart';
 import 'features/main_layout/compiler_tab/presentation/manager/compile_view_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'language_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -105,12 +109,28 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
             create:
                 (_) => ChatBotViewModel(chatBotUseCase: chatBotUseCase )),
-        ChangeNotifierProvider(create: (context) => HomeTabController(),)
+        ChangeNotifierProvider(create: (context) => HomeTabController(),),
+        ChangeNotifierProvider(create: (context) => LanguageProvider() ,)
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        initialRoute:AppRoutesName.splash,
-        routes: AppRoutes.routes,
+      child: Consumer<LanguageProvider>(
+        builder: (context, value, child) =>
+            MaterialApp(
+              locale: Locale(value.lang),
+              localizationsDelegates: [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: [
+                Locale('en'),
+                Locale('ar'),
+              ],
+              debugShowCheckedModeBanner: false,
+              initialRoute:AppRoutesName.splash,
+              routes: AppRoutes.routes,
+            ),
+
       ),
     );
   }

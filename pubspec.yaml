@@ -78,6 +78,7 @@ flutter:
      - assets/icons/
      - assets/images/
      - assets/animation/
+  generate: true
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

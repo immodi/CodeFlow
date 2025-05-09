@@ -5,6 +5,8 @@ import 'package:graduation_project/features/auth/presentation/widgets/custom_but
 import 'package:graduation_project/features/main_layout/profile_tab/presentation/widgets/custom_profile_containers.dart';
 import 'package:provider/provider.dart';
 import '../../../../../core/routes/app_routes_name.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class ProfileScreen extends StatelessWidget {
   final void Function({int subTabIndex})? navigateToHomeTab;
@@ -13,12 +15,13 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var local =AppLocalizations.of(context);
     var size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.gray,
         title: Text(
-          'Account',
+          local!.account,
           style: TextStyle(
             color: AppColors.white,
             fontSize: 20,
@@ -37,11 +40,11 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   SizedBox(height: size.height * 0.1),
                   Text(
-                    'Hi,${authVm.usernameController.text}',
+                    '${local.hi},${authVm.usernameController.text}',
                     style: TextStyle(color: AppColors.white, fontSize: 20),
                   ),
                   CustomProfileContainers(
-                      text: 'Profile',
+                      text: local.profile,
                       onTap:() {
                         Navigator.pushNamed(context, AppRoutesName.profileDetails);
 
@@ -50,7 +53,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 17,),
                   CustomProfileContainers(
-                    text: 'My Projects',
+                    text: local.myProjects,
                     onTap:() {
                       navigateToHomeTab!(subTabIndex: 1);
                     },
@@ -58,7 +61,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 17,),
                   CustomProfileContainers(
-                    text: 'Import Link',
+                    text: local.importLink,
                     onTap:() {
                       navigateToHomeTab!(subTabIndex: 3);
                     },
@@ -72,18 +75,18 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   Spacer(),
                   CustomButton(
-                    text: 'Logout',
+                    text: local.logout,
                     onTap: () {
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
                           backgroundColor: AppColors.gray,
                           title: Text(
-                            'Confirm Logout',
+                            local.confirmLogout,
                             style: TextStyle(color: AppColors.white),
                           ),
                           content: Text(
-                            'Are you sure you want to logout?',
+                            local.areYouSureLogout,
                             style: TextStyle(color: AppColors.white),
                           ),
                           actions: [
@@ -91,7 +94,7 @@ class ProfileScreen extends StatelessWidget {
                               onPressed: () {
                                 Navigator.pop(context); // Close the dialog
                               },
-                              child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+                              child: Text(local.cancel, style: TextStyle(color: Colors.grey)),
                             ),
                             TextButton(
                               onPressed: () async {
@@ -102,7 +105,7 @@ class ProfileScreen extends StatelessWidget {
                                   AppRoutesName.loginScreen,
                                 );
                               },
-                              child: Text('Logout', style: TextStyle(color: Colors.red)),
+                              child: Text(local.logout, style: TextStyle(color: Colors.red)),
                             ),
                           ],
                         ),

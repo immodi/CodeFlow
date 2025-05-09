@@ -5,6 +5,8 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import '../../../../file_managment/presentation/manager/file_view_model.dart';
 import '../../../home/manager/home_tab_controller.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class CodeEditorScreen extends StatelessWidget {
 
@@ -12,6 +14,7 @@ class CodeEditorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var local =AppLocalizations.of(context);
     var size = MediaQuery.of(context).size;
     return Consumer<FileViewModel>(
       builder: (context, fileVM, child) {
@@ -28,7 +31,7 @@ class CodeEditorScreen extends StatelessWidget {
                   children: [
                     SizedBox(height: size.height * 0.07),
                     Text(
-                      'Welcome!',
+                      local!.welcome,
                       style: TextStyle(
                         color: AppColors.white,
                         fontSize: 24,
@@ -37,7 +40,7 @@ class CodeEditorScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 15),
                     Text(
-                      'Ready to start coding?',
+                      local.ready,
                       style: TextStyle(color: AppColors.white, fontSize: 15),
                     ),
                     SizedBox(height: size.height * 0.05),
@@ -80,7 +83,8 @@ class CodeEditorScreen extends StatelessWidget {
                               children: [
                                 Icon(Icons.add, color: AppColors.white),
                                 Text(
-                                  'Create New File',
+                                  local.createNewFile,
+
                                   style: TextStyle(color: AppColors.white, fontSize: 13),
                                 ),
                               ],
@@ -127,7 +131,7 @@ class CodeEditorScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'No recent files',
+                                  local.noRecent,
                                   style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
@@ -135,7 +139,7 @@ class CodeEditorScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  'Start your first project!',
+                                  local.startYourFirst,
                                   style: TextStyle(
                                     fontSize: 13,
                                     color: AppColors.white,
@@ -154,7 +158,7 @@ class CodeEditorScreen extends StatelessWidget {
                         Spacer(),
 
                         Text(
-                          'Explorer Options',
+                          local.exploreOptions,
                           style: TextStyle(color: AppColors.white, fontSize: 16),
                         ),
                         Spacer(),
@@ -180,7 +184,7 @@ class CodeEditorScreen extends StatelessWidget {
                             ),
                             child: Center(
                               child: Text(
-                                'Open Folder',
+                                local.openFolder,
                                 style: TextStyle(color: Colors.black54, fontSize: 13),
                               ),
                             ),
@@ -210,7 +214,7 @@ class CodeEditorScreen extends StatelessWidget {
                             ),
                             child: Center(
                               child: Text(
-                                'import code',
+                                local.importCode,
                                 style: TextStyle(color: AppColors.white, fontSize: 13),
                               ),
                             ),
@@ -233,6 +237,8 @@ class CodeEditorScreen extends StatelessWidget {
 
   Future<bool> createFile(BuildContext context) async {
     TextEditingController fileNameController = TextEditingController();
+    var local =AppLocalizations.of(context);
+
     final fileViewModel = Provider.of<FileViewModel>(context, listen: false);
     String fileName = '';
     bool fileCreated = false;
@@ -242,13 +248,13 @@ class CodeEditorScreen extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.lightGray,
-        title: Text("Create new file",style: TextStyle(color:AppColors.white )),
+        title: Text( local!.createNewFile,style: TextStyle(color:AppColors.white )),
         content: TextField(
           onChanged: (value) {
             fileName = value;
           },
           controller: fileNameController,
-          decoration: InputDecoration(hintText: "File name",hintStyle:TextStyle(color:AppColors.white ) ),
+          decoration: InputDecoration(hintText: local.fileName,hintStyle:TextStyle(color:AppColors.white ) ),
 
         ),
         actions: [
@@ -256,7 +262,7 @@ class CodeEditorScreen extends StatelessWidget {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text("Cancel",style: TextStyle(color:AppColors.white )),
+            child: Text(local.cancel,style: TextStyle(color:AppColors.white )),
           ),
           TextButton(
             onPressed: () async {
@@ -296,12 +302,12 @@ class CodeEditorScreen extends StatelessWidget {
               } else {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Please enter file name")),
+                    SnackBar(content: Text(local.createNewFile)),
                   );
                 }
               }
             },
-            child: Text("Create",style: TextStyle(color:AppColors.white )),
+            child: Text(local.create,style: TextStyle(color:AppColors.white )),
           ),
         ],
       ),

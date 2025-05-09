@@ -41,7 +41,6 @@ class _CompilerScreenState extends State<CompilerScreen> {
     _codeController = CodeController(text: '', language: python);
 
     Future.microtask(() {
-      print('[CompilerScreen] initState → Fetching supported languages...');
       Provider.of<CompileViewModel>(
         context,
         listen: false,
@@ -110,163 +109,166 @@ class _CompilerScreenState extends State<CompilerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<CompileViewModel, FileViewModel>(
-      builder: (context, compiler, fileViewModel, child) {
-        final languages = compiler.rootModel?.supportedLanguages ?? [];
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Consumer2<CompileViewModel, FileViewModel>(
+        builder: (context, compiler, fileViewModel, child) {
+          final languages = compiler.rootModel?.supportedLanguages ?? [];
 
-        return Scaffold(
-          appBar: AppBar(
-            backgroundColor: AppColors.gray,
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: AppColors.gray,
 
-            title: Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    final homeTabController = Provider.of<HomeTabController>(
-                      context,
-                      listen: false,
-                    );
-                    if (fileViewModel.fileCreated) {
-                      homeTabController.changeTab(0);
-                    }
-                    if (fileViewModel.readFile) {
-                      homeTabController.changeTab(1);
-                    }
-                  },
-                  icon: Icon(Icons.arrow_back, color: Colors.white),
-                ),
-                Spacer(),
-                Text(
-                  fileViewModel.selectedFile?.fileName ??
-                      'No file selected', // إذا كان fileName فارغًا، يعرض "No file selected"
-                  style: TextStyle(color: AppColors.white, fontSize: 16),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                SizedBox(width: 10),
-                DropdownButton<String>(
-                  hint: const Text(
-                    '+ Select Language',
-                    style: TextStyle(color: AppColors.white),
+              title: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      final homeTabController = Provider.of<HomeTabController>(
+                        context,
+                        listen: false,
+                      );
+                      if (fileViewModel.fileCreated) {
+                        homeTabController.changeTab(0);
+                      }
+                      if (fileViewModel.readFile) {
+                        homeTabController.changeTab(1);
+                      }
+                    },
+                    icon: Icon(Icons.arrow_back, color: Colors.white),
                   ),
-                  value: selectedLanguage,
-                  dropdownColor: AppColors.gray,
-                  style: const TextStyle(color: AppColors.white),
-                  items:
-                      languages.map((lang) {
-                        return DropdownMenuItem<String>(
-                          value: lang,
-                          child: Text(lang),
-                        );
-                      }).toList(),
-                  onChanged: (newLang) {
-                    setState(() {
-                      selectedLanguage = newLang;
-                      _codeController.language = languageMap[newLang] ?? python;
-                    });
-                  },
+                  Spacer(),
+                  Text(
+                    fileViewModel.selectedFile?.fileName ??
+                        'No file selected', // إذا كان fileName فارغًا، يعرض "No file selected"
+                    style: TextStyle(color: AppColors.white, fontSize: 16),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(width: 10),
+                  DropdownButton<String>(
+                    hint: const Text(
+                      '+ Select Language',
+                      style: TextStyle(color: AppColors.white),
+                    ),
+                    value: selectedLanguage,
+                    dropdownColor: AppColors.gray,
+                    style: const TextStyle(color: AppColors.white),
+                    items:
+                        languages.map((lang) {
+                          return DropdownMenuItem<String>(
+                            value: lang,
+                            child: Text(lang),
+                          );
+                        }).toList(),
+                    onChanged: (newLang) {
+                      setState(() {
+                        selectedLanguage = newLang;
+                        _codeController.language = languageMap[newLang] ?? python;
+                      });
+                    },
+                  ),
+                  const Spacer(),
+                  InkWell(
+                    onTap:
+                        compiler.isLoading ? null : () => _executeCode(context),
+                    child: const Icon(
+                      Icons.play_arrow_outlined,
+                      color: AppColors.white,
+                      size: 35,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            backgroundColor: AppColors.gray,
+            body: Column(
+              children: [
+                Expanded(
+                  child: CodeTheme(
+                    data: CodeThemeData(styles: monokaiSublimeTheme),
+                    child: CodeField(
+                      controller: _codeController,
+                      expands: true,
+                      wrap: true,
+                      background: AppColors.gray,
+                      textStyle: const TextStyle(fontSize: 14),
+                      gutterStyle: GutterStyle(
+                        textStyle: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
                 ),
-                const Spacer(),
-                InkWell(
-                  onTap:
-                      compiler.isLoading ? null : () => _executeCode(context),
-                  child: const Icon(
-                    Icons.play_arrow_outlined,
-                    color: AppColors.white,
-                    size: 35,
+                Container(
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 0.05,
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  color: AppColors.lightGray,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.save, color: AppColors.white),
+                        onPressed: () async {
+                          if (fileViewModel.selectedFile == null) return;
+
+                          String newContent = _codeController.text;
+
+                          if (fileViewModel.isSharedFile) {
+                            // ✅ تحديث ملف متشين
+                            await fileViewModel.updateSharedFile(
+                              fileShareCode:
+                                  fileViewModel.sharedCodeController.text,
+                              newFileContent: newContent,
+                            );
+                          } else {
+                            int? fileId = fileViewModel.selectedFile?.fileId;
+                            if (fileId == null) return;
+
+                            // ✅ تحديث ملف عادي
+                            await fileViewModel.updateFile(
+                              fileId,
+                              newFileContent: newContent,
+                            );
+                          }
+
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text("Save Changes")));
+                        },
+                      ),
+
+                      IconButton(
+                        icon: const Icon(Icons.share, color: AppColors.white),
+                        onPressed: () async {
+                          final file = fileViewModel.selectedFile;
+                          if (file == null) return;
+
+                          final shareData = await fileViewModel.shareFile(
+                            file.fileId,
+                          );
+                          final shareUrl = shareData?.fileShareCode;
+                          final code = _codeController.text;
+
+                          if (shareUrl != null) {
+                            showShareOptionsBottomSheet(context, shareUrl, code);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Failed to generate share link"),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-          backgroundColor: AppColors.gray,
-          body: Column(
-            children: [
-              Expanded(
-                child: CodeTheme(
-                  data: CodeThemeData(styles: monokaiSublimeTheme),
-                  child: CodeField(
-                    controller: _codeController,
-                    expands: true,
-                    wrap: true,
-                    background: AppColors.gray,
-                    textStyle: const TextStyle(fontSize: 14),
-                    gutterStyle: GutterStyle(
-                      textStyle: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                width: double.infinity,
-                height: MediaQuery.of(context).size.height * 0.05,
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
-                ),
-                color: AppColors.lightGray,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.save, color: AppColors.white),
-                      onPressed: () async {
-                        if (fileViewModel.selectedFile == null) return;
-
-                        String newContent = _codeController.text;
-
-                        if (fileViewModel.isSharedFile) {
-                          // ✅ تحديث ملف متشين
-                          await fileViewModel.updateSharedFile(
-                            fileShareCode:
-                                fileViewModel.sharedCodeController.text,
-                            newFileContent: newContent,
-                          );
-                        } else {
-                          int? fileId = fileViewModel.selectedFile?.fileId;
-                          if (fileId == null) return;
-
-                          // ✅ تحديث ملف عادي
-                          await fileViewModel.updateFile(
-                            fileId,
-                            newFileContent: newContent,
-                          );
-                        }
-
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text("Save Changes")));
-                      },
-                    ),
-
-                    IconButton(
-                      icon: const Icon(Icons.share, color: AppColors.white),
-                      onPressed: () async {
-                        final file = fileViewModel.selectedFile;
-                        if (file == null) return;
-
-                        final shareData = await fileViewModel.shareFile(
-                          file.fileId,
-                        );
-                        final shareUrl = shareData?.fileShareCode;
-                        final code = _codeController.text;
-
-                        if (shareUrl != null) {
-                          showShareOptionsBottomSheet(context, shareUrl, code);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text("Failed to generate share link"),
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
