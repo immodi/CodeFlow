@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
-import 'package:graduation_project/core/app_assets/app_assets.dart';
 import 'package:graduation_project/core/theme/app_colors.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';

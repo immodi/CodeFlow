@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:graduation_project/core/app_assets/app_assets.dart';
 import 'package:graduation_project/core/theme/app_colors.dart';
 import 'package:graduation_project/features/auth/presentation/widgets/custom_button.dart';
@@ -7,10 +6,11 @@ import 'package:graduation_project/features/auth/presentation/widgets/custom_tex
 import 'package:provider/provider.dart';
 import 'package:graduation_project/core/routes/app_routes_name.dart';
 import 'package:graduation_project/features/auth/presentation/manager/auth_view_model.dart';
-import 'register_screen.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+   LoginScreen({super.key});
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class LoginScreen extends StatelessWidget {
           child: Consumer<AuthViewModel>(
             builder: (context, viewModel, child) {
               return Form(
-                key: viewModel.formKey, // إضافة GlobalKey<FormState> هنا
+                key: viewModel.formKey,
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
                   keyboardDismissBehavior:
@@ -57,7 +57,7 @@ class LoginScreen extends StatelessWidget {
                           ),
                         ),
                       CustomTextField(
-                        controller: viewModel.usernameController,
+                        controller: usernameController,
                         hintText: 'Enter your username',
                         icon: Icons.person,
                         validator: (value) {
@@ -69,7 +69,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                       SizedBox(height: size.height * 0.01),
                       CustomTextField(
-                        controller: viewModel.passwordController,
+                        controller: passwordController,
                         hintText: 'Enter your password',
                         icon: Icons.lock,
                         isObscure: true,
@@ -133,14 +133,16 @@ class LoginScreen extends StatelessWidget {
                           if (viewModel.formKey.currentState?.validate() ??
                               false) {
                             await viewModel.login(
-                              viewModel.usernameController.text,
-                              viewModel.passwordController.text,
+                              usernameController.text,
+                              passwordController.text,
                             );
                             if (viewModel.isSuccess) {
-                              Navigator.pushReplacementNamed(
+                              Navigator.pushNamedAndRemoveUntil(
                                 context,
                                 AppRoutesName.mainLayout,
+                                    (route) => false, // this removes all previous routes
                               );
+
                             }
                           }
                         },

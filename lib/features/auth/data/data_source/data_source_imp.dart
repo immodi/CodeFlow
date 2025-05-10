@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:graduation_project/core/services/network_services.dart';
+import '../models/password_reset_model.dart';
 import 'data_source.dart';
 
 class AuthRemoteDataSourceImp implements AuthDataSource {
@@ -38,17 +39,21 @@ class AuthRemoteDataSourceImp implements AuthDataSource {
     }
   }
   @override
-  Future<Response> requestPasswordReset({required String username}) async {
+  @override
+  Future<PasswordResetModel> requestPasswordReset({required String username}) async {
     try {
       final response = await _networkService.dio.post(
         "/request-password-reset",
         data: {"username": username},
       );
-      return response;
+
+      return PasswordResetModel.fromJson(response.data);
     } catch (e) {
       return Future.error(e);
     }
   }
+
+
 
   @override
   Future<Response> resetPassword({

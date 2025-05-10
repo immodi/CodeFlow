@@ -1,6 +1,7 @@
 import 'package:graduation_project/features/auth/data/models/auth_model.dart';
 import '../../domain/repo/repo.dart';
 import '../data_source/data_source.dart';
+import '../models/password_reset_model.dart';
 
 class AuthRepositoryImpl implements AuthRepo {
   final AuthDataSource remoteDataSource;
@@ -19,9 +20,10 @@ class AuthRepositoryImpl implements AuthRepo {
     return AuthModel.fromJson(response.data);
   }
   @override
-  Future<void> requestPasswordReset(String username) async {
-    await remoteDataSource.requestPasswordReset(username: username);
+  Future<PasswordResetModel> requestPasswordReset(String username) async {
+    return await remoteDataSource.requestPasswordReset(username: username);
   }
+
 
   @override
   Future<AuthModel> resetPassword(String code, String username, String newPassword) async {

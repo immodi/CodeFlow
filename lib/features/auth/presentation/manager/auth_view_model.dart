@@ -14,6 +14,7 @@ class AuthViewModel extends ChangeNotifier {
   String? token;
   bool rememberMe = false;
   bool showLoginError = false;
+  bool showRegisterError = false;
   bool showResetPasswordError = false;
   bool showRequestResetPasswordError = false;
 
@@ -25,7 +26,7 @@ class AuthViewModel extends ChangeNotifier {
   final TextEditingController emailController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  // ✅ تسجيل الدخول
+
   Future<void> login(String username, String password) async {
     try {
       _setLoading(true);
@@ -51,6 +52,8 @@ class AuthViewModel extends ChangeNotifier {
   Future<void> register(String username, String password, String email) async {
     try {
       _setLoading(true);
+       showRegisterError = false;
+
 
       final result = await authUseCase.register(username, password, email);
       token = result.token;
@@ -65,31 +68,32 @@ class AuthViewModel extends ChangeNotifier {
       errorMessage = null;
       _setLoading(false);
     } catch (e) {
+       showRegisterError = true;
+       notifyListeners();
+
       _handleError(e);
     }
   }
 
-  // ✅ طلب كود إعادة تعيين كلمة المرور
   Future<void> requestPasswordReset(String username) async {
     try {
       _setLoading(true);
-       showRequestResetPasswordError = false;
+      showRequestResetPasswordError = false;
 
-
-      await authUseCase.requestPasswordReset(username);
-
+      final result = await authUseCase.requestPasswordReset(username);
+      emailController.text = result.email;
       isSuccess = true;
-      showLoginError =false;
+      showLoginError = false;
       errorMessage = null;
-      _setLoading(false);
     } catch (e) {
-       showRequestResetPasswordError = true;
-       notifyListeners();
-
-
-       _handleError(e);
+      showRequestResetPasswordError = true;
+      _handleError(e);
+    } finally {
+      _setLoading(false);
+      notifyListeners();
     }
   }
+
 
   // ✅ إعادة تعيين كلمة المرور
   Future<void> resetPassword({
@@ -169,7 +173,6 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ✅ تسجيل خروج
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
@@ -181,6 +184,9 @@ class AuthViewModel extends ChangeNotifier {
     // Clear text fields
     usernameController.clear();
     passwordController.clear();
+    emailController.clear();
+
+
 
     // Hide login error message
     showLoginError = false;

@@ -69,25 +69,47 @@ class ImportLinkScreen extends StatelessWidget {
             InkWell(
               onTap: () async {
                 final homeTabController = Provider.of<HomeTabController>(context, listen: false);
+                final fileViewModel = Provider.of<FileViewModel>(context, listen: false);
 
                 final code = fileViewModel.sharedCodeController.text.trim();
-                if (code.isEmpty) return;
 
+                if (code.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Please enter a code")),
+                  );
+                  return;
+                }
 
-                await fileViewModel.readSharedFile(code); // ما فيش نتيجة راجعة
+                // 🧼 امسح الملف السابق لو موجود
+                fileViewModel.selectedFile = null;
 
+                // Show loading dialog
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (_) => const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
+                  ),
+                );
+
+                // Call the API
+                await fileViewModel.readSharedFile(code);
+
+                // Close the loading dialog
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                }
+
+                // ✅ شرط التحقق بعد التحديث
                 if (fileViewModel.selectedFile != null) {
                   homeTabController.changeTab(2);
-
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("Invalid or expired code")),
                   );
-                  if(fileViewModel.isLoading){
-                    CircularProgressIndicator(color: AppColors.white,);
-                  }
                 }
               }
+
 
               ,
               child: Container(

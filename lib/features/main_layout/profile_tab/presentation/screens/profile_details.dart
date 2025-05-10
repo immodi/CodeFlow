@@ -16,6 +16,7 @@ class ProfileDetails extends StatefulWidget {
 class _ProfileDetailsState extends State<ProfileDetails> {
   @override
   Widget build(BuildContext context) {
+    var local =AppLocalizations.of(context);
     var size= MediaQuery.of(context).size;
     return Consumer2<AuthViewModel,LanguageProvider>(
       builder: (context, authVM, langProvider ,child) =>
@@ -26,7 +27,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
               title: Row(
                 children: [
                   Spacer(),
-                  Text('Profile',style: TextStyle(color: AppColors.white),),
+                  Text(local!.profile,style: TextStyle(color: AppColors.white),),
                   Spacer(),
                   TextButton(
                       onPressed: () {
@@ -45,7 +46,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Name',style: TextStyle(color: AppColors.white,fontSize: 13),),
+                  Text(local.name,style: TextStyle(color: AppColors.white,fontSize: 13),),
                   SizedBox(height: 10,),
                   Container(
                     decoration: BoxDecoration(
@@ -79,7 +80,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                     ),
                   ),
                   SizedBox(height: 20,),
-                  Text('Email',style: TextStyle(color: AppColors.white,fontSize: 13),),
+                  Text(local.email,style: TextStyle(color: AppColors.white,fontSize: 13),),
                   SizedBox(height: 10,),
                   Container(
                     decoration: BoxDecoration(
@@ -113,44 +114,46 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                     ),
                   ),
                   SizedBox(height: 20,),
-                  Text('Language',style: TextStyle(color: AppColors.white,fontSize: 13),),
+                  Text(local.language,style: TextStyle(color: AppColors.white,fontSize: 13),),
+                  SizedBox(height: 20,),
                   Container(
-                   width: double.infinity,
-                    height: size.height*0.07,
+                    width: double.infinity,
+                    height: size.height * 0.07,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
-                      color: AppColors.lightGray
+                      color: AppColors.lightGray,
                     ),
-                    child: Row(
-                      children: [
-
-                        DropdownButton<String>(
-                          value: langProvider.lang,
-                          dropdownColor: Colors.grey[850],
-                          style: const TextStyle(color: Colors.white),
-                          underline: SizedBox(),
-                          iconEnabledColor: Colors.white,
-                          items: langProvider.languages.entries.map((entry) {
-                            return DropdownMenuItem<String>(
-                              value: entry.key, // 'en' أو 'ar'
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+                        value: langProvider.lang,
+                        dropdownColor: Colors.grey[850],
+                        style: const TextStyle(color: Colors.white),
+                        iconEnabledColor: Colors.white,
+                        alignment: AlignmentDirectional.centerEnd, // يخلي السهم في اليمين
+                        items: langProvider.languages.entries.map((entry) {
+                          return DropdownMenuItem<String>(
+                            value: entry.key,
+                            child: Align(
+                              alignment: Alignment.centerLeft, // يخلي النص في الشمال
                               child: Text(
-                                entry.value, // 'English' أو 'العربية'
+                                entry.value,
                                 style: const TextStyle(color: Colors.white),
                               ),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            if (value != null) {
-                              langProvider.setLanguage(value);
-                            }
-                          },
-                        ),
-
-
-
-                      ],
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            langProvider.setLanguage(value);
+                          }
+                        },
+                      ),
                     ),
                   )
+
+
 
                 ],
               ),

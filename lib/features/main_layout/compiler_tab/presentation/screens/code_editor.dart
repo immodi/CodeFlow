@@ -8,9 +8,30 @@ import '../../../home/manager/home_tab_controller.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
-class CodeEditorScreen extends StatelessWidget {
+class CodeEditorScreen extends StatefulWidget {
 
   const CodeEditorScreen({super.key});
+
+  @override
+  State<CodeEditorScreen> createState() => _CodeEditorScreenState();
+}
+
+class _CodeEditorScreenState extends State<CodeEditorScreen> {
+  bool fetchFiles = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      final fileViewModel = Provider.of<FileViewModel>(context, listen: false);
+      await fileViewModel.fetchAllFiles(); // ✅ تحميل الملفات
+      if (mounted) {
+        setState(() {
+          fetchFiles = fileViewModel.files.isEmpty; // ✅ مفيش فايلات؟ اعرض الكونتينر
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,10 +118,8 @@ class CodeEditorScreen extends StatelessWidget {
                     SizedBox(height: size.height * 0.05),
 
                     SizedBox(height: 10),
-                    fileVM.files.isNotEmpty ?
-                    Text('')
-                        :
-                    Container(
+                    if (fileVM.files.isEmpty)
+                      Container(
                       height: size.height * 0.23,
                       width: double.infinity,
                       decoration: BoxDecoration(
@@ -315,5 +334,4 @@ class CodeEditorScreen extends StatelessWidget {
 
     return fileCreated;
   }
-
 }

@@ -12,8 +12,6 @@ class LanguageProvider extends ChangeNotifier {
     if (lang != newLang) {
       lang = newLang;
       notifyListeners();
-      print('Language changed to: $newLang'); // أضف هذا للتأكد
-
     }
   }
 }

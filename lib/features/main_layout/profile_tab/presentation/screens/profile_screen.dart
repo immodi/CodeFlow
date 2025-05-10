@@ -38,11 +38,23 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: size.height * 0.1),
+                  SizedBox(height: size.height * 0.03),
+                  Container(
+                    height: size.height * 0.15,
+                    decoration: BoxDecoration(
+                      color: AppColors.lightGray,
+                      shape: BoxShape.circle
+                    ),
+                    child: Center(child: Icon(Icons.person_outline,color: AppColors.white,size: 48,)),
+                  ),
+                  SizedBox(height: size.height * 0.03),
+
                   Text(
                     '${local.hi},${authVm.usernameController.text}',
                     style: TextStyle(color: AppColors.white, fontSize: 20),
                   ),
+                  SizedBox(height: size.height * 0.03),
+
                   CustomProfileContainers(
                       text: local.profile,
                       onTap:() {
@@ -86,7 +98,7 @@ class ProfileScreen extends StatelessWidget {
                             style: TextStyle(color: AppColors.white),
                           ),
                           content: Text(
-                            local.areYouSureLogout,
+                            local.areYouSureYouWantToLogout,
                             style: TextStyle(color: AppColors.white),
                           ),
                           actions: [

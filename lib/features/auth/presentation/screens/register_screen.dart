@@ -51,6 +51,14 @@ class RegisterScreen extends StatelessWidget {
                       style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
                     SizedBox(height: size.height * 0.1),
+                    if (viewModel.showRegisterError)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 5.0),
+                        child: Text(
+                          "An account with this username or email already exists",
+                          style: TextStyle(color: Colors.red, fontSize: 11),
+                        ),
+                      ),
                     CustomTextField(
                       controller: viewModel.usernameController,
                       hintText: 'Enter your username',
@@ -106,9 +114,10 @@ class RegisterScreen extends StatelessWidget {
 
                           if (viewModel.isSuccess) {
                             viewModel.resetStatus();
-                            Navigator.pushReplacementNamed(
+                            Navigator.pushNamedAndRemoveUntil(
                               context,
                               AppRoutesName.mainLayout,
+                                  (route) => false, // this removes all previous routes
                             );
                           } else if (viewModel.errorMessage != null) {
                             ScaffoldMessenger.of(context).showSnackBar(

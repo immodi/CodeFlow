@@ -1,6 +1,8 @@
 import 'package:graduation_project/features/auth/data/models/auth_model.dart';
 import 'package:graduation_project/features/auth/domain/repo/repo.dart';
 
+import '../../data/models/password_reset_model.dart';
+
 class AuthUseCase {
   final AuthRepo repository;
 
@@ -14,7 +16,7 @@ class AuthUseCase {
     return await repository.register(username, password, email);
   }
 
-  Future<void> requestPasswordReset(String username) async {
+  Future<PasswordResetModel> requestPasswordReset(String username) async {
     return await repository.requestPasswordReset(username);
   }
 
