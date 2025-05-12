@@ -37,6 +37,15 @@ void main() async {
     networkServices.updateToken(token);
   }
 
+  // Start the foreground service on app start
+  const platform = MethodChannel('dummy_service');
+  try {
+    await platform.invokeMethod('startService');
+    print('Foreground service started');
+  } on PlatformException catch (e) {
+    print("Failed to start service: ${e.message}");
+  }
+
   runApp(MyApp(token: token, networkServices: networkServices));
 }
 
